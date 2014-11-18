@@ -16,5 +16,6 @@ try:
     baseetfs = pd.read_csv('data/base_price_data.csv')
 except IOError:
     baseetfs = web.DataReader(instruments.values.flatten().tolist(), 'google', startdate, enddate)
-    baseetfs = baseetfs.Close
+    baseetfs = baseetfs.Close.convert_objects(convert_numeric=True)
     baseetfs.to_csv('data/base_price_data.csv')
+    
