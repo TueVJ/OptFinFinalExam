@@ -23,7 +23,12 @@ except IOError:
     baseetfs = baseetfs.Close.convert_objects(convert_numeric=True)
     baseetfs.to_csv('data/base_price_data.csv')
 
-# Weekly ETF prices.
+# Filter out ETFs with a low number of observations
+baseetfs = baseetfs.loc[:, baseetfs.count() > 2400]
+
+print "Using {} ETFs with more than 2400 price entries".format(len(baseetfs.columns))
+
+# Weekly ETF prices. Missing data is filled forward.
 wetfs = baseetfs.resample('W-WED', how='first', fill_method='pad')
 
-#logreturns =
+dlogreturns = np.log(wetfs).diff()
