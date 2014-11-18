@@ -14,8 +14,16 @@ enddate = '2014-11-10'
 # or it doesn't match the instruments in the csv file.
 try:
     baseetfs = pd.read_csv('data/base_price_data.csv')
+    baseetfs = baseetfs.set_index(
+        baseetfs.columns[0]
+    ).convert_objects(convert_numeric=True)
+    baseetfs.index = baseetfs.index.to_datetime()
 except IOError:
     baseetfs = web.DataReader(instruments.values.flatten().tolist(), 'google', startdate, enddate)
     baseetfs = baseetfs.Close.convert_objects(convert_numeric=True)
     baseetfs.to_csv('data/base_price_data.csv')
-    
+
+# Weekly ETF prices.
+wetfs = baseetfs.resample('W-WED', how='first', fill_method='pad')
+
+#logreturns =
