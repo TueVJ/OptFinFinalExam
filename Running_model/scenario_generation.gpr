@@ -1,1 +1,40 @@
 [PROJECT]
+
+[RP:UNTITLED_1]
+1=
+
+[RP:IMMUNIZATION]
+1=
+
+[RP:BOOTSTRAP_SCENARIOS]
+1=
+
+[RP:FINALPROJECT]
+1=
+
+[GDXDISP: ScenarioReport Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[MRUFILES]
+1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Bootstrap_scenarios.gms
+2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
+3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.lst
+4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\data_number.inc
+5=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Immunization.gms
+6=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\YieldRates.inc
+7=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\dates.inc
+8=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\SpotRates.inc
+
+[OPENWINDOW_1]
+FILE0=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
+FILE1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
+MAXIM=1
+TOP=50
+LEFT=50
+HEIGHT=400
+WIDTH=400
