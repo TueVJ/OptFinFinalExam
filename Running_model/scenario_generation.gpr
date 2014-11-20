@@ -9,9 +9,12 @@
 [RP:BOOTSTRAP_SCENARIOS]
 1=
 
+<<<<<<< Updated upstream
 [RP:FINALPROJECT]
 1=
 
+=======
+>>>>>>> Stashed changes
 [GDXDISP: ScenarioReport Par 3]
 PlaneDim=0
 RowDim=3
@@ -20,6 +23,7 @@ Order=1,2,3
 Decim=7
 PlaneRownr=-1
 
+<<<<<<< Updated upstream
 [MRUFILES]
 1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Bootstrap_scenarios.gms
 2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
@@ -33,6 +37,24 @@ PlaneRownr=-1
 [OPENWINDOW_1]
 FILE0=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
 FILE1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
+=======
+[RP:FINALPROJECT]
+1=
+
+[MRUFILES]
+1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Bootstrap_scenarios.gms
+2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\data_number.inc
+3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Immunization.gms
+4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\YieldRates.inc
+5=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\dates.inc
+6=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\SpotRates.inc
+
+[OPENWINDOW_1]
+FILE0=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
+FILE1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.lst
+FILE2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
+FILE3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
+>>>>>>> Stashed changes
 MAXIM=1
 TOP=50
 LEFT=50
