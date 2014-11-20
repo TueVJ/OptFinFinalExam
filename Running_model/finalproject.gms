@@ -56,54 +56,62 @@ display HistoricalWeeklyReturn, prices;
 *$onorder
 
 
-
 display trainingperiod;
 
+scalar number;
+set tmonth(t) 'trading dates' ;
+*Selecting the dates that will correspond to the number of months for the scenario set - 86
+tmonth(t)$( (ord(t)>=149) and ( mod(ord(t),4) eq 0 ) ) =1;
+number=card(tmonth);
 
-PARAMETER WeeklyScenarios(i,st,s)        'Week scenarios return considering interval 1 (28/01/2005 to 28/02/2008)'
-          MonthlyScenarios(i,s)          'Month scenarios return considering interval 1'
-          WeeklyScenarios_2(i,st,s)      'Week scenarios return considering interval 2 (28/02/2005 to 28/03/2008)'
-          MonthlyScenarios_2(i,s)        'Month scenarios return considering interval 2'
+display tmonth, number, t;
+
+*set tmonth 'number of months' /1*86/;
+*$ontext
+PARAMETER WeeklyScenarios(i,st,s,t)        'Week scenarios return considering interval 1 (28/01/2005 to 28/02/2008)'
+          MonthlyScenarios(i,s,t)          'Month scenarios return considering interval 1'
           ScenarioReport(*,*,*)            'Summary of the generated scenarios'
+          temp(t)                          'Number of months for generating scenarios - since 2005 until end of 2014'
+          temp_2(t)                        'Number of months for exponential'
 ;
 
-scalars   temp           'random number of the week fo interval 1'
-          BeginNum       'Number of the first period of interval 1'
-          EndNum         'Number of the last period of interval 1'
-          BeginNum_2     'Number of the first period of interval 2'
-          EndNum_2       'Number of the last period of interval 2'
-          temp_2         'random number of the week fo interval 2'
+scalars   BeginNum       'Number of the first period'
+          EndNum         'Number of the last period'
+          number_period  'number of months of each scenario set'
 ;
+
+number_period=(393-149)/4;
+
+
 *Generating scenarios for period between 2005-1-28 and 2008-2-28
 *BeginNum - first period after 2005-1-28;
 BeginNum=2;
 *EndNum - last period before 2008-2-28;
 EndNum=156;
 
-*Generating scenarios for period between 2005-2-28 and 2008-3-28 - rollon four weeks forward
-*BeginNum - first period after 2005-1-28;
-BeginNum_2=6;
-*EndNum - last period before 2008-2-28;
-EndNum_2=160;
-
+loop(tmonth,
 loop(s,
     loop(st,
 *random uniform function
-temp=uniformint(BeginNum,EndNum);
-temp_2=uniformint(BeginNum_2,EndNum_2);
+temp(tmonth)=uniformint(BeginNum,EndNum);
+*exponetial function for select more current data
+temp_2(tmonth)=(1/2)*exp( (1/2)*(EndNum-BeginNum));
+
 *Getting week scenarios
-WeeklyScenarios(i,st,s)=sum(t$(ord(t)=temp),HistoricalWeeklyReturn(i,t));
-WeeklyScenarios_2(i,st,s)=sum(t$(ord(t)=temp_2),HistoricalWeeklyReturn(i,t));
+WeeklyScenarios(i,st,s,tmonth)=sum(t$(ord(t)=temp(tmonth)),HistoricalWeeklyReturn(i,t));
 );
 );
 *Getting monthly scenarios
-MonthlyScenarios(i,s)= prod(st, (1+WeeklyScenarios(i,st,s)))-1;
-MonthlyScenarios_2(i,s)= prod(st, (1+WeeklyScenarios_2(i,st,s)))-1;
+MonthlyScenarios(i,s,tmonth)= prod(st, (1+WeeklyScenarios(i,st,s,tmonth)))-1;
+*selecting new period
+BeginNum=BeginNum+4;
+EndNum=EndNum+4;
+);
 
-ScenarioReport(i,s,'Interval_1')=MonthlyScenarios(i,s);
-ScenarioReport(i,s,'Interval_2')=MonthlyScenarios_2(i,s);
-display WeeklyScenarios, MonthlyScenarios_2, ScenarioReport;
+ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
+
+display WeeklyScenarios, MonthlyScenarios, temp_2;
 
 EXECUTE_UNLOAD 'Scenario_generation.gdx', ScenarioReport;
 
-
+*$offtext
