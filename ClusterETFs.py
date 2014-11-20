@@ -7,6 +7,7 @@ import seaborn as sns
 
 from collections import defaultdict
 from matplotlib.ticker import FuncFormatter
+from sklearn.decomposition import PCA
 
 
 def percentformatter(x, pos=0):
@@ -54,26 +55,31 @@ wetfs = baseetfs.resample('W-WED', how='first', fill_method='pad')
 
 # Build correlation matrix of weekly returns
 dlogreturns = np.log(wetfs).diff()
-c = dlogreturns.corr()
+dlc = dlogreturns.cov()
 
 # Colormap used for clustering
 cluster_cmap = sns.cubehelix_palette(
     as_cmap=True,
     start=0.5,
     rot=-3.0,
-    hue=1.0,
+    hue=2.0,
     gamma=1.0,
-    dark=0.3,
-    light=0.7
+    dark=0.2,
+    light=0.8
 )
 
 
 # Get eigenvalues and eigenvectors for plotting.
-eigs, evecs = np.linalg.eigh(c)
+pca = PCA().fit(np.nan_to_num(dlogreturns.values))
 # Extract largest eigenvalue and its eigenvector
-eig1, evec1 = eigs[-1], evecs[-1]
+eig1, evec1 = pca.explained_variance_[0], pca.components_[0]
 # Extract second-largest eigenvalue and its eigenvector
-eig2, evec2 = eigs[-2], evecs[-2]
+eig2, evec2 = pca.explained_variance_[1], pca.components_[1]
+
+print 'Explained variance of component 1: {:.02f}'.format(
+    pca.explained_variance_ratio_[0]*100)
+print 'Explained variance of component 1: {:.02f}'.format(
+    pca.explained_variance_ratio_[1]*100)
 
 # Clustering methods:
 # 'single': duv = min(d(u[i], v[j]))_ij
@@ -82,8 +88,11 @@ eig2, evec2 = eigs[-2], evecs[-2]
 # 'weighted': duv = (d(s,v) + d(t,v))/2 ,
 #             u is formed from s,t
 methods = ['single', 'complete', 'average', 'weighted']
+# Labels to be plotted on projection graphs
+plotted_labels = ['IAU', 'IEF', 'VNQ', 'IXG', 'FXI', 'EWM']
 
-Zs = [hier.linkage(1 - c.values ** 2, method=m) for m in methods]
+
+Zs = [hier.linkage(1 - dlc.values ** 2, method=m) for m in methods]
 # Create nclust clusters from the linkage matrix data
 idxs = []
 for i, (Z, m) in enumerate(zip(Zs, methods)):
@@ -97,15 +106,15 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
     #Plot dendrogram
     hier.dendrogram(
         Z, color_threshold=Z[-nclust+1, 2],
-        labels=['']*len(c.index),
-        # labels=c.index,
+        # labels=['']*len(dlc.index),
+        labels=dlc.index,
         leaf_font_size=10)
     plt.title(m)
 
     # Construct dataframe
     plotdf = pd.DataFrame(dict(
-        e1=evec1.dot(c), e2=evec2.dot(c),
-        cluster=idx, label=c.index
+        e1=evec1.dot(dlc), e2=evec2.dot(dlc),
+        cluster=idx, label=dlc.index
     ))
 
     plt.figure(2)
@@ -117,12 +126,18 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         cmap=cluster_cmap,
         ax=ax
     )
-    #label_point(plotdf.e1, plotdf.e2, plotdf.label, ax)
+    label_point(plotdf.e1, plotdf.e2, [x  if x in plotted_labels else '' for x in plotdf.label], ax)
     plt.xlabel('Projection on first PCA')
     plt.ylabel('Projection on second PCA')
     plt.title(m)
+    plt.ylim([plotdf.e2.min()*1.05, plotdf.e2.max()*1.05])
 
-idx = idxs[0]
+plt.figure(1)
+plt.tight_layout()
+plt.figure(2)
+plt.tight_layout()
+
+idx = idxs[2]
 
 clustered_etfs = defaultdict(list)
 for l, c in zip(plotdf.label, plotdf.cluster):
