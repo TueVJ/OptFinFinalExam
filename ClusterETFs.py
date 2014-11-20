@@ -60,7 +60,7 @@ c = dlogreturns.corr()
 cluster_cmap = sns.cubehelix_palette(
     as_cmap=True,
     start=0.5,
-    rot=-1.5,
+    rot=-3.0,
     hue=1.0,
     gamma=1.0,
     dark=0.3,
@@ -97,7 +97,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
     #Plot dendrogram
     hier.dendrogram(
         Z, color_threshold=Z[-nclust+1, 2],
-        labels=[],
+        labels=['']*len(c.index),
         # labels=c.index,
         leaf_font_size=10)
     plt.title(m)
@@ -120,6 +120,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
     #label_point(plotdf.e1, plotdf.e2, plotdf.label, ax)
     plt.xlabel('Projection on first PCA')
     plt.ylabel('Projection on second PCA')
+    plt.title(m)
 
 idx = idxs[0]
 
@@ -145,5 +146,8 @@ for c, l in clustered_etfs.iteritems():
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.tight_layout()
 
-np.savetxt('data/etfs_max_mean.csv', selected_etfs_mean)
-np.savetxt('data/etfs_min_std.csv', selected_etfs_std)
+np.savetxt('data/etfs_max_mean.csv', selected_etfs_mean, fmt='%s')
+np.savetxt('data/etfs_min_std.csv', selected_etfs_std, fmt='%s')
+wetfs[selected_etfs_mean].to_csv('data/etfs_max_mean_prices.csv')
+wetfs[selected_etfs_std].to_csv('data/etfs_min_std_prices.csv')
+wetfs.index.to_csv('data/dates.csv')
