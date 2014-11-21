@@ -55,14 +55,15 @@ wetfs = baseetfs.resample('W-WED', how='first', fill_method='pad')
 
 # Build correlation matrix of weekly returns
 dlogreturns = np.log(wetfs).diff()
-dlc = dlogreturns.cov()
+#dlc = dlogreturns.cov()
+dlc = dlogreturns.corr()
 
-# Colormap used for clustering
+# Colormap used for clusters
 cluster_cmap = sns.cubehelix_palette(
     as_cmap=True,
     start=0.5,
     rot=-3.0,
-    hue=2.0,
+    hue=1.5,
     gamma=1.0,
     dark=0.2,
     light=0.8
@@ -76,9 +77,9 @@ eig1, evec1 = pca.explained_variance_[0], pca.components_[0]
 # Extract second-largest eigenvalue and its eigenvector
 eig2, evec2 = pca.explained_variance_[1], pca.components_[1]
 
-print 'Explained variance of component 1: {:.02f}'.format(
+print 'Explained variance by component 1: {:.02f} %'.format(
     pca.explained_variance_ratio_[0]*100)
-print 'Explained variance of component 1: {:.02f}'.format(
+print 'Explained variance by component 2: {:.02f} %'.format(
     pca.explained_variance_ratio_[1]*100)
 
 # Clustering methods:
@@ -126,7 +127,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         cmap=cluster_cmap,
         ax=ax
     )
-    label_point(plotdf.e1, plotdf.e2, [x  if x in plotted_labels else '' for x in plotdf.label], ax)
+    label_point(plotdf.e1, plotdf.e2, [x if x in plotted_labels else '' for x in plotdf.label], ax)
     plt.xlabel('Projection on first PCA')
     plt.ylabel('Projection on second PCA')
     plt.title(m)
@@ -154,15 +155,57 @@ for c, l in clustered_etfs.iteritems():
     # Save cluster index for coloring
     clusteridx.append(c*1.0/(nclust-1))
 
+plt.figure(3)
+axl = plt.subplot(121)
 #selected_etfs = ['IAU', 'VNQ', 'IXG']
 (baseetfs/baseetfs.ix[1])[selected_etfs_mean].plot(
     color=map(cluster_cmap, clusteridx),
+    ax=axl
 )
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.tight_layout()
+plt.ylabel('Price index')
+plt.title('Max return')
+
+axr = plt.subplot(122)
+(baseetfs/baseetfs.ix[1])[selected_etfs_std].plot(
+    color=map(cluster_cmap, clusteridx),
+    ax=axr,
+)
+plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
+plt.title('Min stdev')
+plt.tight_layout()
+
 
 np.savetxt('data/etfs_max_mean.csv', selected_etfs_mean, fmt='%s')
 np.savetxt('data/etfs_min_std.csv', selected_etfs_std, fmt='%s')
 wetfs[selected_etfs_mean].to_csv('data/etfs_max_mean_prices.csv', date_format='%Y-%m-%d')
 wetfs[selected_etfs_std].to_csv('data/etfs_min_std_prices.csv', date_format='%Y-%m-%d')
 np.savetxt('data/dates.csv', wetfs.index.format(), fmt='%s')
+
+# Return of 1/N strategy is mean quotient
+# of prices when trading stops and starts.
+tstart = 150
+tstop = len(wetfs.index)-1
+
+print 'Assuming trading starts at {0} and ends at {1}.'.format(
+    wetfs.index[tstart], wetfs.index[tstop]
+)
+
+print 'Max mean ETFs result:'
+r = (wetfs[selected_etfs_mean].ix[tstop]/wetfs[selected_etfs_mean].ix[tstart]).mean()
+print 'Return of 1/N strategy: {:.02f} %'.format(
+    (r-1)*100
+)
+print 'Annualized return of 1/N: {:.02f} %'.format(
+    (r**(52./(tstop-tstart))-1)*100
+)
+
+print 'Min stdev ETFs result:'
+r = (wetfs[selected_etfs_std].ix[tstop]/wetfs[selected_etfs_std].ix[tstart]).mean()
+print 'Return of 1/N strategy: {:.02f} %'.format(
+    (r-1)*100
+)
+print 'Annualized return of 1/N: {:.02f} %'.format(
+    (r**(52./(tstop-tstart))-1)*100
+)
