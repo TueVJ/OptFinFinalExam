@@ -62,8 +62,8 @@ dlc = dlogreturns.corr()
 cluster_cmap = sns.cubehelix_palette(
     as_cmap=True,
     start=0.5,
-    rot=-3.0,
-    hue=1.5,
+    rot=2.0,
+    hue=1.3,
     gamma=1.0,
     dark=0.2,
     light=0.8
@@ -97,7 +97,7 @@ Zs = [hier.linkage(1 - dlc.values ** 2, method=m) for m in methods]
 # Create nclust clusters from the linkage matrix data
 idxs = []
 for i, (Z, m) in enumerate(zip(Zs, methods)):
-    plt.figure(1)
+    plt.figure(1, dpi=100, figsize=(6, 4))
     plt.subplot(2, 2, i)
     idx = hier.fcluster(
         Z, nclust,
@@ -109,7 +109,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         Z, color_threshold=Z[-nclust+1, 2],
         # labels=['']*len(dlc.index),
         labels=dlc.index,
-        leaf_font_size=10)
+        leaf_font_size=4)
     plt.title(m)
 
     # Construct dataframe
@@ -118,7 +118,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         cluster=idx, label=dlc.index
     ))
 
-    plt.figure(2)
+    plt.figure(2, dpi=100, figsize=(6, 4))
     ax = plt.subplot(2, 2, i)
     plotdf.plot(
         kind='scatter',
@@ -131,7 +131,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
     plt.xlabel('Projection on first PCA')
     plt.ylabel('Projection on second PCA')
     plt.title(m)
-    plt.ylim([plotdf.e2.min()*1.05, plotdf.e2.max()*1.05])
+    plt.ylim([plotdf.e2.min()*1.10, plotdf.e2.max()*1.10])
 
 plt.figure(1)
 plt.tight_layout()
@@ -157,7 +157,7 @@ for c, l in clustered_etfs.iteritems():
     # Save cluster index for coloring
     clusteridx.append(c*1.0/(nclust-1))
 
-plt.figure(3)
+plt.figure(3, dpi=100, figsize=(6, 4))
 axl = plt.subplot(121)
 #selected_etfs = ['IAU', 'VNQ', 'IXG']
 (baseetfs/baseetfs.ix[1])[selected_etfs_mean].plot(
@@ -167,6 +167,7 @@ axl = plt.subplot(121)
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.tight_layout()
 plt.ylabel('Price index')
+plt.legend(ncol=2)
 plt.title('Max return')
 
 axr = plt.subplot(122)
@@ -176,6 +177,7 @@ axr = plt.subplot(122)
 )
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.title('Min stdev')
+plt.legend(ncol=2)
 plt.tight_layout()
 plt.savefig('pic/prices_selected_assets.pdf')
 
@@ -217,7 +219,7 @@ print 'Annualized return of 1/N: {:.02f} %'.format(
     (r**(52./(tstop-tstart))-1)*100
 )
 # Plot returns from 1/N strategy
-plt.figure(4)
+plt.figure(4, dpi=100, figsize=(6, 4))
 (999000*wetfs[selected_etfs_mean].mean(axis=1)/(wetfs[selected_etfs_mean].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Max mean ensemble')
 (999000*wetfs[selected_etfs_std].mean(axis=1)/(wetfs[selected_etfs_std].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Min stdev ensemble')
 plt.legend()
