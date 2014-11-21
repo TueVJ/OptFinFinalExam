@@ -135,8 +135,10 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
 
 plt.figure(1)
 plt.tight_layout()
+plt.savefig('pic/dendro_methods.pdf')
 plt.figure(2)
 plt.tight_layout()
+plt.savefig('pic/pca_methods.pdf')
 
 idx = idxs[2]
 
@@ -175,6 +177,7 @@ axr = plt.subplot(122)
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.title('Min stdev')
 plt.tight_layout()
+plt.savefig('pic/prices_selected_assets.pdf')
 
 
 np.savetxt('data/etfs_max_mean.csv', selected_etfs_mean, fmt='%s')
@@ -182,6 +185,10 @@ np.savetxt('data/etfs_min_std.csv', selected_etfs_std, fmt='%s')
 wetfs[selected_etfs_mean].to_csv('data/etfs_max_mean_prices.csv', date_format='%Y-%m-%d')
 wetfs[selected_etfs_std].to_csv('data/etfs_min_std_prices.csv', date_format='%Y-%m-%d')
 np.savetxt('data/dates.csv', wetfs.index.format(), fmt='%s')
+
+###
+#  TODO: Move to seperate file.
+###
 
 # Return of 1/N strategy is mean quotient
 # of prices when trading stops and starts.
@@ -214,3 +221,4 @@ plt.figure(4)
 (999000*wetfs[selected_etfs_mean].mean(axis=1)/(wetfs[selected_etfs_mean].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Max mean ensemble')
 (999000*wetfs[selected_etfs_std].mean(axis=1)/(wetfs[selected_etfs_std].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Min stdev ensemble')
 plt.legend()
+plt.savefig('pic/returns_1overN_only.pdf')
