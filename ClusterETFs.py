@@ -209,3 +209,8 @@ print 'Return of 1/N strategy: {:.02f} %'.format(
 print 'Annualized return of 1/N: {:.02f} %'.format(
     (r**(52./(tstop-tstart))-1)*100
 )
+# Plot returns from 1/N strategy
+plt.figure(4)
+(999000*wetfs[selected_etfs_mean].mean(axis=1)/(wetfs[selected_etfs_mean].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Max mean ensemble')
+(999000*wetfs[selected_etfs_std].mean(axis=1)/(wetfs[selected_etfs_std].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Min stdev ensemble')
+plt.legend()
