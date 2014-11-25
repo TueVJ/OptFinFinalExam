@@ -112,6 +112,6 @@ ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
 
 display WeeklyScenarios, MonthlyScenarios, temp_2;
 
-EXECUTE_UNLOAD 'Scenario_generation.gdx', ScenarioReport;
+EXECUTE_UNLOAD 'Scenario_generation.gdx', MonthlyScenarios;
 
 *$offtext
