@@ -20,7 +20,13 @@ def label_point(x, y, val, ax):
     offsetx = (a.x.max() - a.x.min()) * 0.02
     offsety = (a.y.max() - a.y.min()) * 0.02
     for i, point in a.iterrows():
-        ax.text(point['x'] + offsetx, point['y'] + offsety, str(point['val']), alpha=1.0)
+        ax.text(
+            point['x'] + offsetx,
+            point['y'] + offsety,
+            str(point['val']),
+            alpha=1.0,
+            ha='right'
+        )
 
 #Set number of clusters
 nclust = 10
@@ -143,7 +149,7 @@ plt.figure(2)
 plt.tight_layout()
 plt.savefig('../pic/pca_methods.pdf')
 
-idx = idxs[2]
+idx = idxs[0]
 
 clustered_etfs = defaultdict(list)
 for l, c in zip(plotdf.label, plotdf.cluster):
@@ -162,8 +168,8 @@ for c, l in clustered_etfs.iteritems():
 
 
 # Plot price histories of selected ETFs
-plt.figure(3, dpi=100, figsize=(6, 4))
-axl = plt.subplot(121)
+plt.figure(3, dpi=100, figsize=(6, 8))
+axl = plt.subplot(211)
 #selected_etfs = ['IAU', 'VNQ', 'IXG']
 (baseetfs/baseetfs.ix[1])[selected_etfs_mean].plot(
     color=map(cluster_cmap, clusteridx),
@@ -172,17 +178,17 @@ axl = plt.subplot(121)
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.tight_layout()
 plt.ylabel('Price index')
-plt.legend(ncol=2)
+plt.legend(loc='upper left', ncol=2, prop={'size': 10})
 plt.title('Max return')
 
-axr = plt.subplot(122)
+axr = plt.subplot(212)
 (baseetfs/baseetfs.ix[1])[selected_etfs_std].plot(
     color=map(cluster_cmap, clusteridx),
     ax=axr,
 )
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.title('Min stdev')
-plt.legend(loc='upper left', ncol=2)
+plt.legend(loc='upper left', ncol=2, prop={'size': 10})
 plt.tight_layout()
 plt.savefig('../pic/prices_selected_assets.pdf')
 

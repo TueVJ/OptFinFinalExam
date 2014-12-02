@@ -30,18 +30,17 @@ trainingperiod = sum(t$SAMEAS(t,"2008-2-29"),ORD(t));
 curoffset = 0;
 
 SET
-MonthStart(BaseDate) 'Beginning of month for scenario';
+MonthStart(BaseDate) 'Beginning of months';
 
 MonthStart(BaseDate) = 1$(
-        MOD(ORD(BaseDate)-trainingperiod, 4) = 0
-        AND ORD(BaseDate) > trainingperiod
+        MOD(ORD(BaseDate) - trainingperiod, 4) = 0
         AND ORD(BaseDate) + 4 < CARD(BaseDate)
 );
 
 // The new .csv file is read into the table prices
 table prices(t,i)
 $ondelim
-$include raw_prices_test.csv
+$include ../data/raw_prices_test.csv
 $offdelim
 ;
 
