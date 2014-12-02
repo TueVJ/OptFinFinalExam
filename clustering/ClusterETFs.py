@@ -115,7 +115,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         Z, color_threshold=Z[-nclust+1, 2],
         # labels=['']*len(dlc.index),
         labels=dlc.index,
-        leaf_font_size=3)
+        leaf_font_size=2.5)
     plt.title(m)
 
     # Construct dataframe
