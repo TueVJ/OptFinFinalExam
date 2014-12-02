@@ -24,12 +24,12 @@ def label_point(x, y, val, ax):
             point['x'] + offsetx,
             point['y'] + offsety,
             str(point['val']),
-            alpha=1.0,
-            ha='right'
+            alpha=1.0  # ,
+            #ha='right'
         )
 
 #Set number of clusters
-nclust = 10
+nclust = 15
 
 plt.ion()
 
@@ -96,7 +96,7 @@ print 'Explained variance by component 2: {:.02f} %'.format(
 #             u is formed from s,t
 methods = ['single', 'complete', 'average', 'weighted']
 # Labels to be plotted on projection graphs
-plotted_labels = ['IAU', 'IEF', 'VNQ', 'IXG', 'FXI']
+plotted_labels = ['IAU', 'IEF']
 
 
 Zs = [hier.linkage(1 - dlc.values ** 2, method=m) for m in methods]
@@ -134,8 +134,8 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         ax=ax
     )
     label_point(plotdf.e1, plotdf.e2, [x if x in plotted_labels else '' for x in plotdf.label], ax)
-    plt.xlabel('Projection on first PCA')
-    plt.ylabel('Projection on second PCA')
+    plt.xlabel(r'Projection on $PC_1$')
+    plt.ylabel(r'Projection on $PC_2$')
     plt.title(m)
     plt.ylim([plotdf.e2.min()*1.10, plotdf.e2.max()*1.10])
 

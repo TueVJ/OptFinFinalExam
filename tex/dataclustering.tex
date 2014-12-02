@@ -4,7 +4,7 @@ Price data on the ETFs is downloaded from Google Finance using the data download
 We use the closing price of the ETF for each day to represent the day's price.
 Any ETF with less than 2400 data points is excluded, leaving 93 of the initial 100 ETFs to use for further processing.
 
-To cluster the data, it is necessary to define a distance between assets. We compute the correlation coefficient $C_{ij}$ between assets $i$ and $j$, and define the distance between them as
+To cluster the data, it is necessary to define a distance between assets. We compute the correlation coefficient $C_{ij}$ between the log returns of assets $i$ and $j$, and define the distance between them as
 \begin{gather}
 d(i,j) = 1 - C_{ij}^2  \in [0, 1].
 \end{gather}
@@ -28,8 +28,13 @@ This is intuitively a reasonable measure, as (1) going long on an asset is the s
 To do hierarchical clustering, a method of combining clusters must be defined.
 We compare the results of using the various methods built in to the SciPy module for Python: complete, average, weighted and single.
 A dendrogram of the clusters found by these methods is shown on Figure~\ref{fig:dendrogram}.
-Both the complete, average and weighted methods lead to faily balanced trees, and we choose here to use the complete method, as the final clusters found by this method
-For all methods, a group of four assets is found to be highly dissimilar to the others.
+Both the complete, average and weighted methods lead to faily balanced trees.
+We choose to use the complete method, as the final clusters found by this method are the most uniform in size.
+We choose to use only 10 clusters for the current work, since 
+
+We can further examine the clusters by decomposing $C$ into its principal components $PC_i$, and looking at the projection of the columns of $C$ onto the first two.
+This will show a slice of the space defined by $d(i,j)$, and reveal which assets tend to move in a similar manner across the time series.
+This slice is shown in fig~\ref{fig:pca}.
 
 \begin{figure}[tp]
 \centering
