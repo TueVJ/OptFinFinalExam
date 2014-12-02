@@ -14,7 +14,7 @@ from matplotlib.ticker import FormatStrFormatter
 
 majorFormatter= FormatStrFormatter('%.02f')
 
-data = pd.read_csv('data/Cvar_frontier.csv', sep=';')
+data = pd.read_csv('data/Cvar_frontier.csv', sep=',')
 data['CVaR Bound'] = np.round(np.linspace(0.0,1.0,len(data['CVaR'])),2)
 data = data.set_index('CVaR Bound')
 
@@ -29,10 +29,11 @@ plt.tight_layout()
 plt.savefig('pic/frontier.pdf')
 
 plt.figure(figsize=(6,4), dpi=200)
-data.plot(kind='bar', y=[l for l in data.columns if l not in ('Mean', 'CVaR')], stacked=True)
+data.plot(kind='bar', y=[l for l in data.columns if l not in ('Mean', 'CVaR') and data[l].sum() > 0], stacked=True)
 #plt.gca().xaxis.set_major_formatter(majorFormatter)
 
 plt.legend(ncol=10)
+plt.ylim(0,110)
 
 plt.tight_layout()
 plt.savefig('pic/Stake_vs_CVaR.pdf')
