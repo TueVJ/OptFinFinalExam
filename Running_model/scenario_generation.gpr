@@ -27,25 +27,28 @@ PlaneRownr=-1
 2=======
 3=
 
+[RP:VAR_CVAR_ANSWER]
+1=
+
 [RP:CVAR]
 1=
 
 [MRUFILES]
-1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Day 7 - 21-10-2014\VaR_CVaR.gms
-2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
-3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Day 7 - 21-10-2014\WorldIndices.inc
-4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\data_number.inc
+1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Bootstrap_scenarios.gms
+2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\VaR_CVaR.lst
+3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.lst
+4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Day 7 - 21-10-2014\VaR_CVaR.gms
+5=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\Scenario_generation.gdx
+6=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Day 7 - 21-10-2014\WorldIndices.inc
 
 [OPENWINDOW_1]
-FILE0=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.gms
-FILE1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.lst
-FILE2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
-FILE3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.lst
-FILE4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\VaR_CVaR.lst
-FILE5=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\MidtermProject\Bootstrap_scenarios.gms
-FILE6=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.gms
+FILE0=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Day 12 - 25-11-2014\VaR_CVaR_answer.gms
+FILE1=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.gms
+FILE2=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.lst
+FILE3=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\finalproject.gms
+FILE4=C:\Users\tiasoar\Desktop\PhD\Courses\Optimization in Finance\Classes\Final Project\OptFinFinalExam\Running_model\cvar.lst
 MAXIM=1
-TOP=50
+TOP=15
 LEFT=50
-HEIGHT=400
-WIDTH=400
+HEIGHT=590
+WIDTH=592
