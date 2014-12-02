@@ -3,11 +3,16 @@ $TITLE Conditional Value at Risk model
 
 *Sets
 SETS
-ETF 'ETFs' /SPY, XLF, QQQ, IWM/
 scenariotimes 'Index over weeks included in monthly scenarios' /t1*t4/
 scenario 'Index of scenario' /s1*s250/;
 
-$INCLUDE dates.inc
+SET ETF /
+$include "..\data\etfs_max_mean.csv"
+/;
+set BaseDate /
+$include "..\data\dates.csv"
+/;
+
 
 ALIAS (ETF, i);
 ALIAS (BaseDate, t, l);
@@ -16,12 +21,12 @@ ALIAS (scenario, s);
 
 set tmonth(t) 'trading dates' ;
 *Selecting the dates that will correspond to the number of months for the scenario set - 86
-tmonth(t)$( (ord(t)>=149) and ( mod(ord(t),4) eq 0 ) ) =1;
+tmonth(t)$( (ord(t)>=161) and ( mod(ord(t),4) eq 0 ) ) =1;
 
 display tmonth;
-*$exit
+
+*Including monthly scenarios from scenario generation code
 Parameter MonthlyScenarios(i,s,t);
-*EXECUTE_LOAD 'Scenario_generation.gdx', ScenarioReport;
 $gdxin Scenario_generation
 $Load MonthlyScenarios
 
@@ -54,23 +59,11 @@ PARAMETERS
 
 pr(s) = 1.0 / CARD(s);
 
-P(i,s) = 1 - MonthlyScenarios(i,s,'2008-1-24');
+P(i,s) = 1 + MonthlyScenarios(i,s,'2008-02-27');
 
 EP(i) = SUM(s, pr(s) * P(i,s));
 stdev(i) = sqrt(SUM(s, pr(s) * power(P(i,s) - EP(i), 2)));
 display EP, stdev;
-
-*MIN_MU = SMIN(i, EP(i));
-*MAX_MU = SMAX(i, EP(i));
-
-*scalar lambda;
-*lambda=0.5;
-*MU_TARGET = lambda*MAX_MU + (1-lambda)*MIN_MU;
-
-
-* Assume we want 10 portfolios in the frontier
-
-*MU_STEP = (MAX_MU - MIN_MU) / 10;
 
 scalar CVaR_target;
 
@@ -138,15 +131,6 @@ display MeanReturn.l, Min_value_CVar, x.l, VaR.l;
 solve MinCVaR maximizing MeanReturn using LP;
 Max_value_CVaR=CVaR.l;
 display MeanReturn.l, Max_value_CVaR, x.l, VaR.l;
-*$exit
-$ontext
-for (lambda=0.0 to 1 by 0.1,
-
-         CVaR_target=lambda*(Max_value_CVaR - Min_value_CVaR) + Min_value_CVaR;
-         solve MaxReturn maximazing MeanReturn using LP;
-
-);
-$offtext
 
 CVaR_target=Max_value_CVar;
 solve MaxReturn maximizing MeanReturn using LP;
@@ -155,8 +139,6 @@ display CVaR.l, MeanReturn.l;
 Parameter ScenarioReturn(dr,s);
 
 
-*MU_TARGET=SMAX(i, EP(i));
-*$exit
 * Assume we want 10 portfolios in the frontier
 MU_STEP = (Max_value_CVaR - Min_value_CVar) / 10;
 CVaR_target=Min_value_CVar;
@@ -172,6 +154,7 @@ loop(dr,
          ScenarioReturn(dr,s) = Sum(i, P(i,s) * x.l(i));
 );
 
+* Writing scenario return results on csv file
 File scenarios /'../Data/ScenarioReturn.csv'/;
 
 scenarios.pc=5;
@@ -188,6 +171,32 @@ loop (s,
 );
 
 
+* Writing portfolio assets
+File Cvar_frontier /'..\Data\Cvar_frontier.csv'/;
+
+Cvar_frontier.pc=5;
+Cvar_frontier.pw=1048;
+put Cvar_frontier;
+put 'PP';
+loop(i,
+  put i.tl;
+);
+put 'Mean', 'CVaR'/;
+
+loop(dr,
+    put dr.tl;
+         loop(i,
+            put bonds(i,dr);
+         );
+    put Mean(dr), RES_CVaR(dr)/;
+);
+
+
+
+
+
+* Write into an Excel file
+*$exit
 Parameter
 SummaryReport(*,*)
 SummaryScenario(*,*);
@@ -198,7 +207,7 @@ SummaryReport(i,dr)=bonds(i,dr);
 
 
 display Min_value_CVar, Max_value_CVaR, bonds, CVaR_DR, RES_CVaR, Mean, MU_TARGET, SummaryReport, ScenarioReturn;
-$exit
+*$exit
 * Write into an Excel file
 EXECUTE_UNLOAD 'CVaR_results.gdx', SummaryReport;
 EXECUTE 'gdxxrw.exe CVaR_results.gdx O=Frontier.xls par=SummaryReport rng=Bootstrap!a1' ;
