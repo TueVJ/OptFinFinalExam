@@ -17,17 +17,23 @@ def percentformatter(x, pos=0):
 def label_point(x, y, val, ax):
     # http://stackoverflow.com/questions/15910019/
     a = pd.DataFrame({'x': x, 'y': y, 'val': val})
-    offsetx = (a.x.max() - a.x.min()) * 0.01
-    offsety = (a.y.max() - a.y.min()) * 0.01
+    offsetx = (a.x.max() - a.x.min()) * 0.02
+    offsety = (a.y.max() - a.y.min()) * 0.02
     for i, point in a.iterrows():
-        ax.text(point['x'] + offsetx, point['y'] + offsety, str(point['val']), alpha=0.4)
+        ax.text(
+            point['x'] + offsetx,
+            point['y'] + offsety,
+            str(point['val']),
+            alpha=1.0,
+            ha='right'
+        )
 
 #Set number of clusters
 nclust = 10
 
 plt.ion()
 
-instruments = pd.read_csv('instruments2.csv')
+instruments = pd.read_csv('../input_data/instruments2.csv')
 
 startdate = '2005-01-28'
 enddate = '2014-11-10'
@@ -35,7 +41,7 @@ enddate = '2014-11-10'
 # Download the asset data if the data isn't there,
 # or it doesn't match the instruments in the csv file.
 try:
-    baseetfs = pd.read_csv('data/base_price_data.csv')
+    baseetfs = pd.read_csv('../data/base_price_data.csv')
     baseetfs = baseetfs.set_index(
         baseetfs.columns[0]
     ).convert_objects(convert_numeric=True)
@@ -43,7 +49,7 @@ try:
 except IOError:
     baseetfs = web.DataReader(instruments.values.flatten().tolist(), 'google', startdate, enddate)
     baseetfs = baseetfs.Close.convert_objects(convert_numeric=True)
-    baseetfs.to_csv('data/base_price_data.csv')
+    baseetfs.to_csv('../data/base_price_data.csv')
 
 # Filter out ETFs with a low number of observations
 baseetfs = baseetfs.loc[:, baseetfs.count() > 2400]
@@ -90,7 +96,7 @@ print 'Explained variance by component 2: {:.02f} %'.format(
 #             u is formed from s,t
 methods = ['single', 'complete', 'average', 'weighted']
 # Labels to be plotted on projection graphs
-plotted_labels = ['IAU', 'IEF', 'VNQ', 'IXG', 'FXI', 'EWM']
+plotted_labels = ['IAU', 'IEF', 'VNQ', 'IXG', 'FXI']
 
 
 Zs = [hier.linkage(1 - dlc.values ** 2, method=m) for m in methods]
@@ -109,7 +115,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         Z, color_threshold=Z[-nclust+1, 2],
         # labels=['']*len(dlc.index),
         labels=dlc.index,
-        leaf_font_size=4)
+        leaf_font_size=3)
     plt.title(m)
 
     # Construct dataframe
@@ -117,7 +123,7 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
         e1=evec1.dot(dlc), e2=evec2.dot(dlc),
         cluster=idx, label=dlc.index
     ))
-
+    # Plot PCA projections
     plt.figure(2, dpi=100, figsize=(6, 4))
     ax = plt.subplot(2, 2, i)
     plotdf.plot(
@@ -133,14 +139,17 @@ for i, (Z, m) in enumerate(zip(Zs, methods)):
     plt.title(m)
     plt.ylim([plotdf.e2.min()*1.10, plotdf.e2.max()*1.10])
 
+# Save dendrogram
 plt.figure(1)
 plt.tight_layout()
-plt.savefig('pic/dendro_methods.pdf')
+plt.savefig('../pic/dendro_methods.pdf')
+
+# Save PCA projection figure
 plt.figure(2)
 plt.tight_layout()
-plt.savefig('pic/pca_methods.pdf')
+plt.savefig('../pic/pca_methods.pdf')
 
-idx = idxs[2]
+idx = idxs[0]
 
 clustered_etfs = defaultdict(list)
 for l, c in zip(plotdf.label, plotdf.cluster):
@@ -157,8 +166,10 @@ for c, l in clustered_etfs.iteritems():
     # Save cluster index for coloring
     clusteridx.append(c*1.0/(nclust-1))
 
-plt.figure(3, dpi=100, figsize=(6, 4))
-axl = plt.subplot(121)
+
+# Plot price histories of selected ETFs
+plt.figure(3, dpi=100, figsize=(6, 8))
+axl = plt.subplot(211)
 #selected_etfs = ['IAU', 'VNQ', 'IXG']
 (baseetfs/baseetfs.ix[1])[selected_etfs_mean].plot(
     color=map(cluster_cmap, clusteridx),
@@ -167,60 +178,23 @@ axl = plt.subplot(121)
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.tight_layout()
 plt.ylabel('Price index')
-plt.legend(ncol=2)
+plt.legend(loc='upper left', ncol=2, prop={'size': 10})
 plt.title('Max return')
 
-axr = plt.subplot(122)
+axr = plt.subplot(212)
 (baseetfs/baseetfs.ix[1])[selected_etfs_std].plot(
     color=map(cluster_cmap, clusteridx),
     ax=axr,
 )
 plt.gca().yaxis.set_major_formatter(FuncFormatter(percentformatter))
 plt.title('Min stdev')
-plt.legend(ncol=2)
+plt.legend(loc='upper left', ncol=2, prop={'size': 10})
 plt.tight_layout()
-plt.savefig('pic/prices_selected_assets.pdf')
+plt.savefig('../pic/prices_selected_assets.pdf')
 
-
-np.savetxt('data/etfs_max_mean.csv', selected_etfs_mean, fmt='%s')
-np.savetxt('data/etfs_min_std.csv', selected_etfs_std, fmt='%s')
-wetfs[selected_etfs_mean].to_csv('data/etfs_max_mean_prices.csv', date_format='%Y-%m-%d')
-wetfs[selected_etfs_std].to_csv('data/etfs_min_std_prices.csv', date_format='%Y-%m-%d')
-np.savetxt('data/dates.csv', wetfs.index.format(), fmt='%s')
-
-###
-#  TODO: Move to seperate file.
-###
-
-# Return of 1/N strategy is mean quotient
-# of prices when trading stops and starts.
-tstart = 150
-tstop = len(wetfs.index)-1
-
-print 'Assuming trading starts at {0} and ends at {1}.'.format(
-    wetfs.index[tstart], wetfs.index[tstop]
-)
-
-print 'Max mean ETFs result:'
-r = (wetfs[selected_etfs_mean].ix[tstop]/wetfs[selected_etfs_mean].ix[tstart]).mean()
-print 'Return of 1/N strategy: {:.02f} %'.format(
-    (r-1)*100
-)
-print 'Annualized return of 1/N: {:.02f} %'.format(
-    (r**(52./(tstop-tstart))-1)*100
-)
-
-print 'Min stdev ETFs result:'
-r = (wetfs[selected_etfs_std].ix[tstop]/wetfs[selected_etfs_std].ix[tstart]).mean()
-print 'Return of 1/N strategy: {:.02f} %'.format(
-    (r-1)*100
-)
-print 'Annualized return of 1/N: {:.02f} %'.format(
-    (r**(52./(tstop-tstart))-1)*100
-)
-# Plot returns from 1/N strategy
-plt.figure(4, dpi=100, figsize=(6, 4))
-(999000*wetfs[selected_etfs_mean].mean(axis=1)/(wetfs[selected_etfs_mean].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Max mean ensemble')
-(999000*wetfs[selected_etfs_std].mean(axis=1)/(wetfs[selected_etfs_std].mean(axis=1).ix[tstart])).ix[tstart:tstop].plot(label='Min stdev ensemble')
-plt.legend()
-plt.savefig('pic/returns_1overN_only.pdf')
+# Save output
+np.savetxt('../data/etfs_max_mean.csv', selected_etfs_mean, fmt='%s')
+np.savetxt('../data/etfs_min_std.csv', selected_etfs_std, fmt='%s')
+wetfs[selected_etfs_mean].to_csv('../data/etfs_max_mean_prices.csv', date_format='%Y-%m-%d')
+wetfs[selected_etfs_std].to_csv('../data/etfs_min_std_prices.csv', date_format='%Y-%m-%d')
+np.savetxt('../data/dates.csv', wetfs.index.format(), fmt='%s')

@@ -25,11 +25,17 @@ This is intuitively a reasonable measure, as (1) going long on an asset is the s
 \label{fig:pca}
 \end{figure}
 
-A dendrogram of the clusters found in this way is shown on Figure~\ref{fig:dendrogram}.
+To do hierarchical clustering, a method of combining clusters must be defined.
+We compare the results of using the various methods built in to the SciPy module for Python: complete, average, weighted and single.
+A dendrogram of the clusters found by these methods is shown on Figure~\ref{fig:dendrogram}.
+Both the complete, average and weighted methods lead to faily balanced trees, and we choose here to use the complete method, as the final clusters found by this method
+For all methods, a group of four assets is found to be highly dissimilar to the others.
 
 \begin{figure}[tp]
 \centering
 \includegraphics{../pic/prices_selected_assets.pdf}
-\caption{Price history for the assets selected by the max-return criteria (left) and the min-stdev criteria (right).}
+\caption{Price history for the assets selected by the max-return (top) and the min-stdev criteria (bottom).}
 \label{fig:prices_selected}
 \end{figure}
+
+The assets selected by these two criteria and their associated price histories for the entire period are shown in Figure~\ref{fig:prices_selected}.
