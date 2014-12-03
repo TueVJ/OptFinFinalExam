@@ -1,4 +1,4 @@
-\section{Moment matching scenarios}
+\section{Scenario generation via moment matching}
 
 For the moment matching scenarios, we are looking to match the mean, variance, skewness and kurtosis with historical data.
 Calculating these for each month $m$ as
@@ -6,21 +6,29 @@ Calculating these for each month $m$ as
 \mu_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} r^m_{i,t} \\
 \beta_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^2 \\
 \gamma_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^3 \\
-\eta_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^4
+\eta_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^4 ,
 \end{gather}
 
-we solve the optimization problem to find the scenario set ${\{\xi_{i,s}\}}_{m}$
+we solve the following optimization problem to find the scenario sets ${\{\xi_{i,s}\}}_{m}$:
 
 \begin{align}
 \min \sum_i \left(
-	{(\tilde{\mu}_i - \mu_{m,i})}^2
+	{(\tilde{\mu}_i - \mu_{m,i})}^2 +
+	{\left(\frac{\tilde{\beta}_i}{\beta_{m,i}} - 1\right)}^2 +
+	{\left(\frac{\tilde{\gamma}_i - \gamma_{m,i}}{\beta_{m,i}^{3/2}}\right)}^2 +
+	{\left(\frac{\tilde{\eta}_i - \eta_{m,i}}{\beta_{m,i}^{2}}\right)}^2 +
 \right)
 \label{eq:momentobj}
 \end{align}
 S.t.
 \begin{align}
 \tilde{\mu}_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} \xi_{i,s} \\
-\tilde\beta_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^2 \\
-\tilde\gamma_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^3 \\
-\tilde\eta_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^4
+
+\tilde{\beta}_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^2 \\
+
+\tilde{\gamma}_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^3 \\
+
+\tilde{\eta}_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^4
 \end{align}
+
+The normalization in~\eqref{eq:momentobj} by powers of $\beta_{m,i}$ ensures that the objective is scale-invariant, and that each term has an equal weight.
