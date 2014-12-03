@@ -31,14 +31,16 @@ $include ..\data\etfs_max_mean_prices.csv
 $offdelim
 ;
 
-PARAMETER HistoricalWeeklyReturn(i,t);
+PARAMETER HistoricalWeeklyReturn(i,t), HistoricalMonthlyReturn(i,t) ;
 
 HistoricalWeeklyReturn(i,t) = prices(t+1,i)/prices(t,i) - 1;
+
+HistoricalMonthlyReturn(i,t)$(ord(t) > 3) =  (1+HistoricalWeeklyReturn(i,t)) * (1+HistoricalWeeklyReturn(i,t-1)) * (1+HistoricalWeeklyReturn(i,t-2)) * (1+HistoricalWeeklyReturn(i,t-3)) - 1;
 
 display HistoricalWeeklyReturn, prices;
 
 set tmonth(t) 'trading dates' ;
-*Selecting the dates that will correspond to the number of months for the scenario set - 86
+*Selecting the dates that will correspond to the number of months for the scenario set - 87
 tmonth(t)$( (ord(t)>=161) and ( mod(ord(t)-1,4) eq 0 ) ) =1;
 scalar number;
 number=card(tmonth);
@@ -87,3 +89,4 @@ display WeeklyScenarios, MonthlyScenarios, temp_2;
 
 EXECUTE_UNLOAD 'Scenario_generation.gdx', MonthlyScenarios;
 
+Execute_unload 'Historical_month_return.gdx', HistoricalMonthlyReturn;
