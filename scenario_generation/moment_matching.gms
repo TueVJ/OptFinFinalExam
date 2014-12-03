@@ -1,5 +1,5 @@
 * Generate scenarios using bootstrap method
-* Author: Tue Vissing Jensen
+* Author: Tue Vissing Jensen, Tiago Soares
 * DTU fall 2014 for course "Optimization in Finance."
 
 $eolcom //
@@ -115,36 +115,51 @@ skewness_weight = 1;
 kurtosis_weight = 1;
 
 scalar n;
-n=0
+n=1;
 
 loop(tmonth,
 
-// Calculate mean, Variance, Skewness, and Kurtosis
-Mean(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
-	HistoricalMonthlyReturn(i,t))/(EndNum-BeginNum); 
+	// Calculate mean, Variance, Skewness, and Kurtosis
+	Mean(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+		HistoricalMonthlyReturn(i,t))/(EndNum-BeginNum); 
 
-Variance(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
-	power(HistoricalMonthlyReturn(i,t) - Mean(i), 2))/(EndNum-BeginNum) ;
+	Variance(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+		power(HistoricalMonthlyReturn(i,t) - Mean(i), 2))/(EndNum-BeginNum) ;
 
-Skewness(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
-	power(HistoricalMonthlyReturn(i,t) - Mean(i), 3))/(EndNum-BeginNum) ;
+	Skewness(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+		power(HistoricalMonthlyReturn(i,t) - Mean(i), 3))/(EndNum-BeginNum) ;
 
-Kurtosis(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
-	power(HistoricalMonthlyReturn(i,t) - Mean(i), 4))/(EndNum-BeginNum) ;
+	Kurtosis(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+		power(HistoricalMonthlyReturn(i,t) - Mean(i), 4))/(EndNum-BeginNum) ;
 
-// Initialize to normal distribution
-xi.l(i,s) = normal(Mean(i),Variance(i));
+	// Initialize to normal distribution
+	xi.l(i,s) = normal(Mean(i),Variance(i));
 
-// Solve moment matching model
-solve MomentMatch minimizing error using nlp;
+	// Solve moment matching model
+	solve MomentMatch minimizing error using nlp;
 
-*Getting monthly scenarios
-MonthlyScenarios(i,s,tmonth)= xi.l(i,s);
+	*Getting monthly scenarios
+	MonthlyScenarios(i,s,tmonth)= xi.l(i,s);
 
-*selecting new period
-BeginNum=BeginNum+4;
-EndNum=EndNum+4;
-*n=n+1;
+	*selecting new period
+	BeginNum=BeginNum+4;
+	EndNum=EndNum+4;
+
+	// Output first month to a csv file for plotting.
+	//if( n = 0,
+	//	File scenarios /'../Data/MomentScenario.csv'/;
+	//	scenarios.pc=5;
+	//	scenarios.pw=1048;
+	//	put scenarios;
+	//	put 'PP','Scenario', 'ScenarioReturn'/;
+	//	loop (dr,
+	//		loop (s,
+	//			put dr.tl, s.tl, ScenarioReturn(dr,s)/;
+	//		);
+	//	);
+	//)
+
+	n=n+1;
 );
 
 ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
@@ -156,5 +171,5 @@ display Kurtosis, ensemble_kurtosis.l;
 
 display MonthlyScenarios;
 
-EXECUTE_UNLOAD 'Scenario_generation_moment.gdx', MonthlyScenarios;
+EXECUTE_UNLOAD '../data/Scenario_generation_moment.gdx', MonthlyScenarios;
 
