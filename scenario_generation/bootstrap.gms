@@ -63,22 +63,23 @@ BeginNum=1;
 EndNum=161;
 
 loop(tmonth,
-loop(s,
-    loop(st,
-*random uniform function
-temp(tmonth)=uniformint(BeginNum,EndNum);
-*exponetial function for select more current data
-temp_2(tmonth)=(1/2)*exp( (1/2)*(EndNum-BeginNum));
+	loop(s,
+	    loop(st,
+			//random uniform function
+			temp(tmonth)=uniformint(BeginNum,EndNum);
+			
+			//exponetial function for select more current data
+			temp_2(tmonth)=(1/2)*exp( (1/2)*(EndNum-BeginNum));
 
-*Getting week scenarios
-WeeklyScenarios(i,st,s,tmonth)=sum(t$(ord(t)=temp(tmonth)),HistoricalWeeklyReturn(i,t));
-);
-);
-*Getting monthly scenarios
-MonthlyScenarios(i,s,tmonth)= prod(st, (1+WeeklyScenarios(i,st,s,tmonth)))-1;
-*selecting new period
-BeginNum=BeginNum+4;
-EndNum=EndNum+4;
+			//Getting week scenarios
+			WeeklyScenarios(i,st,s,tmonth)=sum(t$(ord(t)=temp(tmonth)),HistoricalWeeklyReturn(i,t));
+		);
+	);
+	*Getting monthly scenarios
+	MonthlyScenarios(i,s,tmonth)= prod(st, (1+WeeklyScenarios(i,st,s,tmonth)))-1;
+	*selecting new period
+	BeginNum=BeginNum+4;
+	EndNum=EndNum+4;
 );
 
 ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
