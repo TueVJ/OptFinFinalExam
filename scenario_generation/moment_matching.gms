@@ -31,9 +31,11 @@ $include ../data/etfs_max_mean_prices.csv
 $offdelim
 ;
 
-PARAMETER HistoricalWeeklyReturn(i,t);
+PARAMETER HistoricalWeeklyReturn(i,t), HistoricalMonthlyReturn(i,t) ;
 
 HistoricalWeeklyReturn(i,t) = prices(t+1,i)/prices(t,i) - 1;
+
+HistoricalMonthlyReturn(i,t)$(ord(t) > 3) =  (1+HistoricalWeeklyReturn(i,t)) * (1+HistoricalWeeklyReturn(i,t-1)) * (1+HistoricalWeeklyReturn(i,t-2)) * (1+HistoricalWeeklyReturn(i,t-3)) - 1;
 
 display HistoricalWeeklyReturn, prices;
 
@@ -83,11 +85,13 @@ EQUATIONS
 	defkurtosis(i)
 ;
 
+// Error = weighted sum of standardized moments
+
 totalerror.. error =e=
 				mean_weight *     sum(i, power(ensemble_mean(i) - Mean(i), 2)) + 
-				variance_weight * sum(i, power(ensemble_variance(i) - Variance(i), 2)) + 
-				skewness_weight * sum(i, power(ensemble_skewness(i) - Skewness(i), 2)) + 
-				kurtosis_weight * sum(i, power(ensemble_kurtosis(i) - Kurtosis(i), 2))
+				variance_weight * sum(i, power(ensemble_variance(i) / Variance(i) - 1, 2)) + 
+				skewness_weight * sum(i, power((ensemble_skewness(i) - Skewness(i)) / Variance(i)**(3./2) , 2)) + 
+				kurtosis_weight * sum(i, power((ensemble_kurtosis(i) - Kurtosis(i)) / Variance(i)**2, 2))
 ;
 
 defmean(i)..		ensemble_mean(i) =e= sum(s, xi(i,s))/CARD(s);
@@ -98,52 +102,54 @@ defkurtosis(i)..	ensemble_kurtosis(i) =e= sum(s, power(xi(i,s) - ensemble_mean(i
 
 model MomentMatch 'Moment matching model' /totalerror, defmean, defvar, defskewness, defkurtosis/;
 
-Mean(i) = 0;
-Variance(i) = 1;
-Skewness(i) = 0;
-Kurtosis(i) = 3;
-
-mean_weight = 1;
-variance_weight = 1;
-skewness_weight = 1;
-kurtosis_weight = 1;
-
-xi.l(i,s) = normal(Mean(i),Variance(i));
-
-solve MomentMatch minimizing error using nlp;
-
-display ensemble_mean.l, ensemble_variance.l, ensemble_skewness.l, ensemble_kurtosis.l;
-
-
-
-
-$exit
 *Generating scenarios for period between 2005-1-28 and 2008-2-28
 *BeginNum - first period after 2005-1-28;
 BeginNum=1;
 *EndNum - last period before 2008-2-28;
 EndNum=161;
 
+* Set weights for different terms
+mean_weight = 1;
+variance_weight = 1;
+skewness_weight = 1;
+kurtosis_weight = 1;
+
+scalar n;
+n=0
+
 loop(tmonth,
-loop(s,
-    loop(st,
-*random uniform function
-temp(tmonth)=uniformint(BeginNum,EndNum);
 
-Mean(i) = // Calculate mean
-Variance(i) = // Calculate Variance
-Skewness(i) = // Calculate Skewness
-Kurtosis(i) = // Calculate Kurtosis
+// Calculate mean, Variance, Skewness, and Kurtosis
+Mean(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+	HistoricalMonthlyReturn(i,t))/(EndNum-BeginNum); 
 
-*Getting week scenarios
-WeeklyScenarios(i,st,s,tmonth)=sum(t$(ord(t)=temp(tmonth)),HistoricalWeeklyReturn(i,t));
-);
-);
+Variance(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+	power(HistoricalMonthlyReturn(i,t) - Mean(i), 2))/(EndNum-BeginNum) ;
+
+Skewness(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+	power(HistoricalMonthlyReturn(i,t) - Mean(i), 3))/(EndNum-BeginNum) ;
+
+Kurtosis(i) = sum(t$(ord(t) >= BeginNum and ord(t) < EndNum and mod(ORD(t)-BeginNum,4) = 0),
+	power(HistoricalMonthlyReturn(i,t) - Mean(i), 4))/(EndNum-BeginNum) ;
+
+// Initialize to normal distribution
+xi.l(i,s) = normal(Mean(i),Variance(i));
+
+// Solve moment matching model
+solve MomentMatch minimizing error using nlp;
+
 *Getting monthly scenarios
-MonthlyScenarios(i,s,tmonth)= prod(st, (1+WeeklyScenarios(i,st,s,tmonth)))-1;
+MonthlyScenarios(i,s,tmonth)= xi.l(i,s);
+display Mean, ensemble_mean.l;
+display Variance, ensemble_variance.l;
+display Skewness, ensemble_skewness.l;
+display Kurtosis, ensemble_kurtosis.l;
+
+
 *selecting new period
 BeginNum=BeginNum+4;
 EndNum=EndNum+4;
+*n=n+1;
 );
 
 ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
