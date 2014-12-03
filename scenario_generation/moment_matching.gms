@@ -140,11 +140,6 @@ solve MomentMatch minimizing error using nlp;
 
 *Getting monthly scenarios
 MonthlyScenarios(i,s,tmonth)= xi.l(i,s);
-display Mean, ensemble_mean.l;
-display Variance, ensemble_variance.l;
-display Skewness, ensemble_skewness.l;
-display Kurtosis, ensemble_kurtosis.l;
-
 
 *selecting new period
 BeginNum=BeginNum+4;
@@ -153,6 +148,11 @@ EndNum=EndNum+4;
 );
 
 ScenarioReport(i,s,tmonth)=MonthlyScenarios(i,s,tmonth);
+
+display Mean, ensemble_mean.l;
+display Variance, ensemble_variance.l;
+display Skewness, ensemble_skewness.l;
+display Kurtosis, ensemble_kurtosis.l;
 
 display MonthlyScenarios;
 
