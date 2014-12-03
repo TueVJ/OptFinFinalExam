@@ -1,3 +1,26 @@
-\section{Portfolio revision implementation}
+\section{Moment matching scenarios}
 
-WORDS
+For the moment matching scenarios, we are looking to match the mean, variance, skewness and kurtosis with historical data.
+Calculating these for each month $m$ as
+\begin{gather}
+\mu_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} r^m_{i,t} \\
+\beta_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^2 \\
+\gamma_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^3 \\
+\eta_{m,i} = \frac{1}{|T_m|} \sum_{t \in T_m} {\left( r^m_{i,t} - \mu_{m,i} \right)}^4
+\end{gather}
+
+we solve the optimization problem to find the scenario set ${\{\xi_{i,s}\}}_{m}$
+
+\begin{align}
+\min \sum_i \left(
+	{(\tilde{\mu}_i - \mu_{m,i})}^2
+\right)
+\label{eq:momentobj}
+\end{align}
+S.t.
+\begin{align}
+\tilde{\mu}_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} \xi_{i,s} \\
+\tilde\beta_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^2 \\
+\tilde\gamma_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^3 \\
+\tilde\eta_i = \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^4
+\end{align}
