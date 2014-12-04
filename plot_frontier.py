@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import FormatStrFormatter
 
-majorFormatter= FormatStrFormatter('%.02f')
+majorFormatter= FormatStrFormatter('%.00f')
 
 data = pd.read_csv('data/Cvar_frontier.csv', sep=',')
 data['CVaR Bound'] = np.round(np.linspace(0.0,1.0,len(data['CVaR'])),2)
@@ -21,9 +21,10 @@ data = data.set_index('CVaR Bound')
 plt.figure(figsize=(6,4), dpi=200)
 data.plot(x='Mean', y='CVaR', marker='.', x_compat=True)
 plt.ylabel('CVaR')
-plt.xlabel('Mean return')
+plt.xlabel('Expected Value')
 plt.gca().xaxis.set_major_formatter(majorFormatter)
 plt.gca().yaxis.set_major_formatter(majorFormatter)
+plt.xticks(rotation =10)
 
 plt.tight_layout()
 plt.savefig('pic/frontier.pdf')
@@ -31,9 +32,9 @@ plt.savefig('pic/frontier.pdf')
 plt.figure(figsize=(6,4), dpi=200)
 data.plot(kind='bar', y=[l for l in data.columns if l not in ('Mean', 'CVaR') and data[l].sum() > 0], stacked=True)
 #plt.gca().xaxis.set_major_formatter(majorFormatter)
-
+plt.ylabel('Current Value')
 plt.legend(ncol=10)
-plt.ylim(0,110)
+plt.ylim(0,1125000)
 
 plt.tight_layout()
 plt.savefig('pic/Stake_vs_CVaR.pdf')
