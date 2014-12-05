@@ -21,6 +21,7 @@ sdf['Actual Profit'] = sdf['Current Value'].diff()
 sdf = sdf.reset_index().set_index(['Type', 'Time'])
 sdf['Cumulative Trading Cost'] = df.reset_index().groupby(by=['Type', 'Time'])['Trading Cost'].sum().groupby(level=[0]).cumsum()
 sdf = sdf.reset_index().set_index('Time')
+sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
 
 # Set up 1/N results, add to sdf
 rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
@@ -32,8 +33,10 @@ rawetfs = rawetfs.ix[df.index]
 # Normalize prices to initial prices
 rawetfs = rawetfs / rawetfs.ix[0]
 # Compute value of 1 over n portfolio
-overnportfolio = (rawetfs / len(rawetfs.columns) * budget).sum(1)
+overnportfoliovalue = budget * rawetfs.sum(1) / len(rawetfs.columns)
 
+
+# Value of portfolio over time
 plt.figure(1, figsize=(6, 3), dpi=100)
 ax = plt.axes()
 namedict = {
@@ -44,8 +47,10 @@ namedict = {
 for l, d in sdf.groupby('Type'):
     (d['Current Value'] - d['Cumulative Trading Cost']).plot(label=namedict[l], ax=ax)
 
-overnportfolio.plot(label='1 over N', ax=ax)
+overnportfoliovalue.plot(label='1 over N', ax=ax)
 
 plt.xlabel('')
 plt.ylabel("Portfolio Value [DKK]")
 plt.legend(ncol=1, loc='upper left')
+
+plt.savefig('../pic/trading_portfolio_value.pdf')
