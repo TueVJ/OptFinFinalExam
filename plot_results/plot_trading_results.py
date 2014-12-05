@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 budget = 1000000
+index = 100
 
 df = pd.read_csv('../data/portfolio_revision_all.csv')
 df['Time'] = pd.to_datetime(df['Time'])
@@ -31,24 +32,70 @@ sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
 gp = pdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
 gp2 = pdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
 
-plt.figure(1)
+gp = gp.T.div(gp.sum(1)).T
+gp2 = gp2.T.div(gp2.sum(1)).T
+
+# Tick axis every n months
+n = 12
+plt.figure(1, figsize=(6, 8), dpi=100)
 
 ax1 = plt.subplot(211)
-gp.loc[:, gp.sum() > 0].plot(ax=ax1)
+p1 = (gp.loc[:, gp.loc[gp.index[1]:].sum() > 0]*100).plot(
+    kind='bar',
+    ax=ax1,
+    stacked=True,
+    colormap=sns.cubehelix_palette(
+        8, start=.5, rot=-1, as_cmap=True
+    ),
+    width=1
+)
+ticks = p1.xaxis.get_ticklocs()
+ticklabels = [l.get_text() for l in p1.xaxis.get_ticklabels()]
+p1.xaxis.set_ticks(ticks[::n])
+p1.xaxis.set_ticklabels(map(lambda x: x[:-9], ticklabels[::n]))
+plt.xticks(rotation=18)
 
-plt.legend(loc='upper left', ncol=5)
+# leg1 = p1.legend(loc='left', ncol=1, bbox_to_anchor=(1.0, 1.0), fontsize=8)
+leg1 = p1.legend(
+    bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+    ncol=7, mode="expand", borderaxespad=0.)
+plt.ylim(0, 100)
+plt.xlabel('')
+
 
 ax2 = plt.subplot(212)
-gp2.loc[:, gp2.sum() > 0].plot(ax=ax2)
+p2 = (gp2.loc[:, gp2.loc[gp2.index[1]:].sum() > 0]*100).plot(
+    kind='bar',
+    ax=ax2,
+    stacked=True,
+    colormap=sns.cubehelix_palette(
+        8, start=.5, rot=-1, as_cmap=True
+    ),
+    width=1
+)
+ticks = p2.xaxis.get_ticklocs()
+ticklabels = [l.get_text() for l in p2.xaxis.get_ticklabels()]
+p2.xaxis.set_ticks(ticks[::n])
+p2.xaxis.set_ticklabels(map(lambda x: x[:-9], ticklabels[::n]))
+plt.xticks(rotation=18)
 
-plt.legend(loc='upper left', ncol=5)
+leg2 = p2.legend(loc='left', ncol=2, bbox_to_anchor=(1, 1.0), fontsize=8)
+leg2 = p2.legend(
+    bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+    ncol=7, mode="expand", borderaxespad=0.)
+plt.ylim(0, 100)
+plt.xlabel('')
 
+plt.tight_layout(h_pad=2)
+plt.subplots_adjust(top=0.93)
+plt.savefig('../pic/trading_portfolio.pdf')
 
 # Figure: Portfolio predictions vs. scenarios
 
-gp = pdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
-gp2 = pdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
+gp = sdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
+gp2 = sdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
 
+raise SystemExit
 plt.figure(2)
 
 # ax1 = plt.subplot(211)
@@ -64,7 +111,7 @@ rawetfs = rawetfs.ix[df.index]
 # Normalize prices to initial prices
 rawetfs = rawetfs / rawetfs.ix[0]
 # Compute value of 1 over n portfolio
-overnportfoliovalue = budget * rawetfs.sum(1) / len(rawetfs.columns)
+overnportfoliovalue = index * rawetfs.sum(1) / len(rawetfs.columns)
 
 # Value of portfolio over time
 plt.figure(3, figsize=(6, 3), dpi=100)
@@ -75,7 +122,7 @@ namedict = {
 }
 
 for l, d in sdf.groupby('Type'):
-    d['Net Value'].plot(label=namedict[l], ax=ax)
+    (d['Net Value']*index/budget).plot(label=namedict[l], ax=ax)
 
 overnportfoliovalue.plot(label='1 over N', ax=ax)
 
