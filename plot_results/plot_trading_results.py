@@ -9,7 +9,7 @@ df = pd.read_csv('../data/portfolio_revision_all.csv')
 df['Time'] = pd.to_datetime(df['Time'])
 df = df.set_index('Time')
 
-statscolumns = ['Expected Value', 'CVaR', 'Trading Cost']
+statscolumns = ['Maximum Value', 'Minimum Value', 'Expected Value', 'CVaR', 'Trading Cost']
 
 pdf = df[[c for c in df.columns if c not in statscolumns]]
 sdf = df[[c for c in df.columns if c in statscolumns] + ['Type']]
@@ -28,25 +28,31 @@ sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
 
 # Figure: Portfolio revisions
 
-gp = pdf.groupby('Type').get_group('risk_averse').
-gp2 = pdf.groupby('Type').get_group('risk_neutral')
+gp = pdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
+gp2 = pdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
 
 plt.figure(1)
 
-plt.subplot(211)
-gp.loc[gp.sum() > 0].plot()
+ax1 = plt.subplot(211)
+gp.loc[:, gp.sum() > 0].plot(ax=ax1)
 
-plt.legend('upper left', ncol=5)
+plt.legend(loc='upper left', ncol=5)
 
-plt.subplot(212)
-gp.loc[gp.sum() > 0].plot()
+ax2 = plt.subplot(212)
+gp2.loc[:, gp2.sum() > 0].plot(ax=ax2)
 
-plt.legend('upper left', ncol=5)
+plt.legend(loc='upper left', ncol=5)
 
 
 # Figure: Portfolio predictions vs. scenarios
-if False:
-    pass
+
+gp = pdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
+gp2 = pdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
+
+plt.figure(2)
+
+# ax1 = plt.subplot(211)
+# gp.
 
 # Set up 1/N results
 rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
