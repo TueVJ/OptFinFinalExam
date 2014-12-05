@@ -20,11 +20,20 @@ set tmonth(t) 'trading dates' ;
 *Selecting the dates that will correspond to the number of months for the scenario set - 87
 tmonth(t)$( (ord(t)>=161) and ( mod(ord(t)-1,4) eq 0 ) ) =1;
 
-*Including monthly scenarios from scenario generation code
+
 Parameter MonthlyScenarios(i,s,t);
-$gdxin Scenario_generation
+
+*Choose the scenario generation (1 - Bootstrap ; 2 - Moment matching)
+$eval scenario_method 2
+*Including monthly scenarios from scenario generation bootstrap code
+$iftheni   %scenario_method%==1 $gdxin ..\data\Scenario_generation_bootstrap
+$else                           $gdxin ..\data\Scenario_generation_moment
+$endif
+
+
 $Load MonthlyScenarios
 
+*$exit
 SCALARS
         Budget        'Nominal investment budget'
         alpha         'Confidence level'
@@ -140,8 +149,14 @@ loop(dr,
          ScenarioReturn(dr,s) = Sum(i, P(i,s) * x.l(i));
 );
 
-* Writing scenario return results on csv file
-File scenarios /'../Data/ScenarioReturn.csv'/;
+
+* Writing bootstrap scenario return results on csv file
+$iftheni   %scenario_method%==1 File scenarios /'../data/ScenarioReturn_bootstrap.csv'/;
+* Writing moment matching scenario return results on csv file
+$else                           File scenarios /'../data/ScenarioReturn_moment.csv'/;
+$endif
+
+
 
 scenarios.pc=5;
 scenarios.pw=1048;
@@ -154,8 +169,13 @@ loop (dr,
          );
 );
 
-* Writing portfolio assets
-File Cvar_frontier /'..\Data\Cvar_frontier.csv'/;
+
+* Writing bootstrap portfolio assets
+$iftheni   %scenario_method%==1 File Cvar_frontier /'..\data\Cvar_frontier_bootstrap.csv'/;
+* Writing moment matching portfolio assets
+$else                           File Cvar_frontier /'..\data\Cvar_frontier_moment.csv'/;
+$endif
+
 
 Cvar_frontier.pc=5;
 Cvar_frontier.pw=1048;
@@ -194,7 +214,7 @@ EP(i) = SUM(s, pr(s) * P(i,s));
 Parameter     x_old(i)   'Base ETF portfolio from previous cvar model'
               HistoricalMonthlyReturn(i,t) 'Historical Monthly Return';
 *`including historical monthly return data from gdx file
-$gdxin Historical_month_return
+$gdxin ..\data\Historical_month_return
 $Load HistoricalMonthlyReturn
 
 * Establishing old portfolio concerning the choosing a specific run of previous CVaR model (risk averse solution - PP_1)
@@ -319,8 +339,12 @@ x_old(i)= bonds_neutral(t,i) * (1 + HistoricalMonthlyReturn(i,t+4));
 display trading_costs_averse;
 
 ***** Portfolio revision model solution to csv file
-* Writing portfolio assets
-File portfolio_revision /'..\Data\portfolio_revision.csv'/;
+* Writing bootstrap portfolio assets
+$iftheni   %scenario_method%==1 File portfolio_revision /'..\data\portfolio_revision_bootstrap.csv'/;
+* Writing moment matching portfolio assets
+$else                           File portfolio_revision /'..\data\portfolio_revision_moment.csv'/;
+$endif
+
 
 portfolio_revision.pc=5;
 portfolio_revision.pw=1048;
@@ -355,7 +379,11 @@ put MR_neutral('2008-03-26'), CVaR_neutral('2008-03-26'), trading_costs_neutral(
 
 
 ***************Writing in csv file all the solution for every tmonth - back-test solution
-File portfolio_revision_all /'..\Data\portfolio_revision_all.csv'/;
+* Writing bootstrap portfolio assets
+$iftheni   %scenario_method%==1 File portfolio_revision_all /'..\Data\portfolio_revision_all_bootstrap.csv'/;
+* Writing moment matching portfolio assets
+$else                           File portfolio_revision_all /'..\Data\portfolio_revision_all_moment.csv'/;
+$endif
 
 portfolio_revision_all.pc=5;
 portfolio_revision_all.pw=1048;
