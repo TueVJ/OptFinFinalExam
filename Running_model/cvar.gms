@@ -250,14 +250,15 @@ x.l(i) = x_old(i);
 *bin.up(i)=0;
 solve  revision minimizing Total_cost using MIP;
 
-parameter MR_initial, CVaR_initial, bonds_initial(i), trading_costs_initial;
+parameter MR_initial, CVaR_initial, bonds_initial(i), trading_costs_initial, max_value_initial, min_value_initial;
 MR_initial=MeanReturn.l;
 CVaR_initial=CVaR.l;
 bonds_initial(i)=x.l(i);
 trading_costs_initial=trade_cost.l;
+max_value_initial=smax(s, SUM(i, P(i,s) * x.l(i)));
+min_value_initial=smin(s, SUM(i, P(i,s) * x.l(i)));
 
-
-display bonds, x_old, x.l, x_difference.l, CVaR_initial, MR_initial, trading_costs_initial;
+display bonds, x_old, x.l, x_difference.l, CVaR_initial, MR_initial, trading_costs_initial, max_value_initial, min_value_initial;
 *$exit
 
 ******************************
@@ -383,6 +384,11 @@ CVaR_total('2008-02-27','risk_averse')=RES_CVaR('PP_1');
 CVaR_total('2008-02-27','risk_neutral')=RES_CVaR('PP_1');
 trading_costs_total('2008-02-27','risk_averse')= 0;
 trading_costs_total('2008-02-27','risk_neutral')= 0;
+maximum_value('2008-02-27','risk_averse') = max_value_initial;
+maximum_value('2008-02-27','risk_neutral') = max_value_initial;
+minimum_value('2008-02-27','risk_averse') = min_value_initial;
+minimum_value('2008-02-27','risk_neutral') = min_value_initial;
+
 
 put 'Time', 'Type', 'Expected Value', 'CVaR', 'Trading Cost', 'Maximum Value', 'Minimum Value';
 loop(i,
