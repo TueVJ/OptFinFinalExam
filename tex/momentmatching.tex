@@ -22,10 +22,10 @@ we solve the following optimization problem to find the scenario sets ${\{\xi_{i
 \end{align}
 S.t.
 \begin{align}
-\tilde{\mu}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} \xi_{i,s} \\
-\tilde{\beta}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^2 \\
-\tilde{\gamma}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^3 \\
-\tilde{\eta}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^4
+\tilde{\mu}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} \xi_{i,s} \; \; \forall i \\
+\tilde{\beta}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^2 \; \; \forall i \\
+\tilde{\gamma}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^3 \; \; \forall i \\
+\tilde{\eta}_i &= \frac{1}{|\Omega|} \sum_{s \in \Omega} {\left( \xi_{i,s} - \tilde{\mu}_i \right)}^4 \; \; \forall i
 \end{align}
 
 The normalization in~\eqref{eq:momentobj} by powers of $\beta_{m,i}$ ensures that the objective is scale-invariant, and that each term has an equal weight.
