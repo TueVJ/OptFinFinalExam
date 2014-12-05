@@ -6,26 +6,36 @@ import seaborn as sns
 budget = 1000000
 index = 100
 
-df = pd.read_csv('../data/portfolio_revision_all.csv')
-df['Time'] = pd.to_datetime(df['Time'])
-df = df.set_index('Time')
 
-statscolumns = ['Maximum Value', 'Minimum Value', 'Expected Value', 'CVaR', 'Trading Cost']
+def prepare_data(df):
+    '''
+        Return: (pdf,sdf), dataframes containing data on
+                portfolio and statistics.
+    '''
+    df['Time'] = pd.to_datetime(df['Time'])
+    df = df.set_index('Time')
 
-pdf = df[[c for c in df.columns if c not in statscolumns]]
-sdf = df[[c for c in df.columns if c in statscolumns] + ['Type']]
+    statscolumns = ['Maximum Value', 'Minimum Value', 'Expected Value', 'CVaR', 'Trading Cost']
 
+    pdf = df[[c for c in df.columns if c not in statscolumns]]
+    sdf = df[[c for c in df.columns if c in statscolumns] + ['Type']]
 
-# Calculate some extra values
-sdf['Current Value'] = pdf.sum(axis=1)
-sdf['Expected Profit'] = sdf['Expected Value'] - sdf['Current Value']
-sdf['Actual Profit'] = sdf['Current Value'].diff()
+    # Calculate some extra values
+    sdf['Current Value'] = pdf.sum(axis=1)
+    sdf['Expected Profit'] = sdf['Expected Value'] - sdf['Current Value']
+    sdf['Actual Profit'] = sdf['Current Value'].diff(2)  # Shift by two due to two types
 
-sdf = sdf.reset_index().set_index(['Type', 'Time'])
-sdf['Cumulative Trading Cost'] = df.reset_index().groupby(by=['Type', 'Time'])['Trading Cost'].sum().groupby(level=[0]).cumsum()
-sdf = sdf.reset_index().set_index('Time')
-sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
+    sdf = sdf.reset_index().set_index(['Type', 'Time'])
+    sdf['Cumulative Trading Cost'] = df.reset_index().groupby(by=['Type', 'Time'])['Trading Cost'].sum().groupby(level=[0]).cumsum()
+    sdf = sdf.reset_index().set_index('Time')
+    sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
+    return pdf, sdf
 
+df = pd.read_csv('../data/portfolio_revision_all_bootstrap.csv')
+pdf, sdf = prepare_data(df)
+
+mdf = pd.read_csv('../data/portfolio_revision_all_moment.csv')
+mpdf, msdf = prepare_data(mdf)
 
 # Figure: Portfolio revisions
 
@@ -95,11 +105,17 @@ plt.savefig('../pic/trading_portfolio.pdf')
 gp = sdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
 gp2 = sdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
 
-raise SystemExit
 plt.figure(2)
 
-# ax1 = plt.subplot(211)
-# gp.
+ax1 = plt.subplot(211)
+gp['Forecasted Value'] = gp['Expected Value'].shift(1)
+gp['Max Forecasted Value'] = gp['Maximum Value'].shift(1)
+gp['Min Forecasted Value'] = gp['Minimum Value'].shift(1)
+
+gp['Forecasted Value'].plot(c=sns.color_palette)
+gp['Max Forecasted Value'].plot()
+gp['Min Forecasted Value'].plot()
+
 
 # Set up 1/N results
 rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
@@ -107,7 +123,7 @@ rawetfs = rawetfs.rename(columns={u'Unnamed: 0': 'Time'})
 rawetfs['Time'] = pd.to_datetime(rawetfs['Time'])
 rawetfs = rawetfs.set_index('Time')
 # Select date range of problem
-rawetfs = rawetfs.ix[df.index]
+rawetfs = rawetfs.ix[sdf.index]
 # Normalize prices to initial prices
 rawetfs = rawetfs / rawetfs.ix[0]
 # Compute value of 1 over n portfolio
@@ -123,6 +139,14 @@ namedict = {
 
 for l, d in sdf.groupby('Type'):
     (d['Net Value']*index/budget).plot(label=namedict[l], ax=ax)
+
+mnamedict = {
+    'risk_averse': 'Risk Averse, moment matching',
+    'risk_neutral': 'Risk Neutral, moment matching'
+}
+
+for l, d in msdf.groupby('Type'):
+    (d['Net Value']*index/budget).plot(label=mnamedict[l], ax=ax)
 
 overnportfoliovalue.plot(label='1 over N', ax=ax)
 
