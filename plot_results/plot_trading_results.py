@@ -14,6 +14,8 @@ statscolumns = ['Expected Value', 'CVaR', 'Trading Cost']
 pdf = df[[c for c in df.columns if c not in statscolumns]]
 sdf = df[[c for c in df.columns if c in statscolumns] + ['Type']]
 
+
+# Calculate some extra values
 sdf['Current Value'] = pdf.sum(axis=1)
 sdf['Expected Profit'] = sdf['Expected Value'] - sdf['Current Value']
 sdf['Actual Profit'] = sdf['Current Value'].diff()
@@ -23,7 +25,30 @@ sdf['Cumulative Trading Cost'] = df.reset_index().groupby(by=['Type', 'Time'])['
 sdf = sdf.reset_index().set_index('Time')
 sdf['Net Value'] = sdf['Current Value'] - sdf['Cumulative Trading Cost']
 
-# Set up 1/N results, add to sdf
+
+# Figure: Portfolio revisions
+
+gp = pdf.groupby('Type').get_group('risk_averse').
+gp2 = pdf.groupby('Type').get_group('risk_neutral')
+
+plt.figure(1)
+
+plt.subplot(211)
+gp.loc[gp.sum() > 0].plot()
+
+plt.legend('upper left', ncol=5)
+
+plt.subplot(212)
+gp.loc[gp.sum() > 0].plot()
+
+plt.legend('upper left', ncol=5)
+
+
+# Figure: Portfolio predictions vs. scenarios
+if False:
+    pass
+
+# Set up 1/N results
 rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
 rawetfs = rawetfs.rename(columns={u'Unnamed: 0': 'Time'})
 rawetfs['Time'] = pd.to_datetime(rawetfs['Time'])
@@ -35,9 +60,8 @@ rawetfs = rawetfs / rawetfs.ix[0]
 # Compute value of 1 over n portfolio
 overnportfoliovalue = budget * rawetfs.sum(1) / len(rawetfs.columns)
 
-
 # Value of portfolio over time
-plt.figure(1, figsize=(6, 3), dpi=100)
+plt.figure(3, figsize=(6, 3), dpi=100)
 ax = plt.axes()
 namedict = {
     'risk_averse': 'Risk Averse, bootstrap',
@@ -45,12 +69,12 @@ namedict = {
 }
 
 for l, d in sdf.groupby('Type'):
-    (d['Current Value'] - d['Cumulative Trading Cost']).plot(label=namedict[l], ax=ax)
+    d['Net Value'].plot(label=namedict[l], ax=ax)
 
 overnportfoliovalue.plot(label='1 over N', ax=ax)
 
 plt.xlabel('')
-plt.ylabel("Portfolio Value [DKK]")
+plt.ylabel("Portfolio Net Value [DKK]")
 plt.legend(ncol=1, loc='upper left')
 
 plt.savefig('../pic/trading_portfolio_value.pdf')
