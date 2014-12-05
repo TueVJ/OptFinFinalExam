@@ -89,7 +89,7 @@ p2.xaxis.set_ticks(ticks[::n])
 p2.xaxis.set_ticklabels(map(lambda x: x[:-9], ticklabels[::n]))
 plt.xticks(rotation=18)
 
-leg2 = p2.legend(loc='left', ncol=2, bbox_to_anchor=(1, 1.0), fontsize=8)
+# leg2 = p2.legend(loc='center left', ncol=2, bbox_to_anchor=(1, 1.0), fontsize=8)
 leg2 = p2.legend(
     bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
     ncol=7, mode="expand", borderaxespad=0.)
@@ -105,17 +105,42 @@ plt.savefig('../pic/trading_portfolio.pdf')
 gp = sdf.groupby('Type').get_group('risk_averse').drop('Type', 1)
 gp2 = sdf.groupby('Type').get_group('risk_neutral').drop('Type', 1)
 
-plt.figure(2)
-
-ax1 = plt.subplot(211)
 gp['Forecasted Value'] = gp['Expected Value'].shift(1)
 gp['Max Forecasted Value'] = gp['Maximum Value'].shift(1)
 gp['Min Forecasted Value'] = gp['Minimum Value'].shift(1)
 
-gp['Forecasted Value'].plot(c=sns.color_palette)
-gp['Max Forecasted Value'].plot()
-gp['Min Forecasted Value'].plot()
+gp2['Forecasted Value'] = gp2['Expected Value'].shift(1)
+gp2['Max Forecasted Value'] = gp2['Maximum Value'].shift(1)
+gp2['Min Forecasted Value'] = gp2['Minimum Value'].shift(1)
 
+plt.figure(2)
+
+ax1 = plt.subplot(211)
+(gp['Forecasted Value']/budget).plot(c=sns.xkcd_rgb['salmon'], lw=3, ax=ax1)
+(gp['Current Value']/budget).plot(c=sns.xkcd_rgb['black'], lw=2, alpha=0.7, ax=ax1)
+plt.fill_between(
+    gp.index,
+    gp['Max Forecasted Value'].values/budget,
+    gp['Min Forecasted Value'].values/budget,
+    color=sns.xkcd_rgb['pale red']
+)
+plt.xlabel('')
+plt.ylabel('Portfolio Value [MDKK]')
+
+ax2 = plt.subplot(212)
+(gp2['Forecasted Value']/budget).plot(c=sns.xkcd_rgb['salmon'], lw=3, ax=ax2)
+(gp2['Current Value']/budget).plot(c=sns.xkcd_rgb['black'], lw=2, alpha=0.7, ax=ax2)
+plt.xlabel('')
+plt.ylabel('Portfolio Value [MDKK]')
+plt.fill_between(
+    gp2.index,
+    gp2['Max Forecasted Value'].values/budget,
+    gp2['Min Forecasted Value'].values/budget,
+    color=sns.xkcd_rgb['pale red']
+)
+
+plt.tight_layout()
+plt.savefig('../pic/trading_forecasted_value.pdf')
 
 # Set up 1/N results
 rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
