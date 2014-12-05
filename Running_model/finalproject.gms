@@ -76,6 +76,6 @@ EndNum=EndNum+4;
 display WeeklyScenarios, MonthlyScenarios, temp_2;
 
 * Extracting MonthlyScenarios data to gdx file (to be used on CVaR model)
-EXECUTE_UNLOAD 'Scenario_generation.gdx', MonthlyScenarios;
+EXECUTE_UNLOAD '../data/Scenario_generation_bootstrap.gdx', MonthlyScenarios;
 * Extracting historicalMonthlyreturn to gdx file (to be used on portfolio revision model)
-Execute_unload 'Historical_month_return.gdx', HistoricalMonthlyReturn;
+Execute_unload '../data/Historical_month_return.gdx', HistoricalMonthlyReturn;
