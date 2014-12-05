@@ -271,8 +271,8 @@ option clear=x.l;
 
 * code for all the months taking into account risk averse and risk neutral
 
-Parameter MR_averse(t), CVaR_averse(t), bonds_averse(t,i), trading_costs_averse(t),
-          MR_neutral(t), CVaR_neutral(t), bonds_neutral(t,i), trading_costs_neutral(t);
+Parameter MR_averse(t), CVaR_averse(t), bonds_averse(t,i), trading_costs_averse(t), max_value_averse(t), min_value_averse(t),
+          MR_neutral(t), CVaR_neutral(t), bonds_neutral(t,i), trading_costs_neutral(t), max_value_neutral(t), min_value_neutral(t);
 
 * Risk averse code
 x_old(i)= bonds(i,'PP_1') * (1 + HistoricalMonthlyReturn(i,'2008-03-26'));
@@ -284,6 +284,8 @@ EP(i) = SUM(s, pr(s) * P(i,s));
 *Risk averse
 lambda=1;
 solve  revision minimizing Total_cost using MIP;
+max_value_averse(t)=smax(s, SUM(i, P(i,s) * x.l(i)));
+min_value_averse(t)=smin(s, SUM(i, P(i,s) * x.l(i)));
 MR_averse(t)=MeanReturn.l;
 CVaR_averse(t)=CVaR.l;
 bonds_averse(t,i)=x.l(i);
@@ -303,6 +305,8 @@ EP(i) = SUM(s, pr(s) * P(i,s));
 *Risk neutral
 lambda=0;
 solve  revision minimizing Total_cost using MIP;
+max_value_neutral(t)=smax(s, SUM(i, P(i,s) * x.l(i)));
+min_value_neutral(t)=smin(s, SUM(i, P(i,s) * x.l(i)));
 MR_neutral(t)=MeanReturn.l;
 CVaR_neutral(t)=CVaR.l;
 bonds_neutral(t,i)=x.l(i);
@@ -357,7 +361,7 @@ portfolio_revision_all.pw=1048;
 put portfolio_revision_all;
 
 set risk/risk_averse, risk_neutral/;
-Parameter Mr_total(t,risk), bonds_total(t,i,risk), CVaR_total(t,risk), trading_costs_total(t,risk);
+Parameter Mr_total(t,risk), bonds_total(t,i,risk), CVaR_total(t,risk), trading_costs_total(t,risk), maximum_value(t,risk), minimum_value(t,risk);
 Mr_total(t,'risk_averse')=MR_averse(t);
 Mr_total(t,'risk_neutral')=MR_neutral(t);
 bonds_total(t,i,'risk_averse')=bonds_averse(t,i);
@@ -366,6 +370,10 @@ CVaR_total(t,'risk_averse')=CVaR_averse(t);
 CVaR_total(t,'risk_neutral')=CVaR_neutral(t);
 trading_costs_total(t,'risk_averse')= trading_costs_averse(t);
 trading_costs_total(t,'risk_neutral')= trading_costs_neutral(t);
+maximum_value(t,'risk_averse') = max_value_averse(t);
+maximum_value(t,'risk_neutral') = max_value_neutral(t);
+minimum_value(t,'risk_averse')= min_value_averse(t);
+minimum_value(t,'risk_neutral')= min_value_neutral(t);
 *initial values on the table of the first cvar model from february choosing PP_1
 Mr_total('2008-02-27','risk_averse')=Mean('PP_1');
 Mr_total('2008-02-27','risk_neutral')=Mean('PP_1');
@@ -376,8 +384,7 @@ CVaR_total('2008-02-27','risk_neutral')=RES_CVaR('PP_1');
 trading_costs_total('2008-02-27','risk_averse')= 0;
 trading_costs_total('2008-02-27','risk_neutral')= 0;
 
-
-put 'Time', 'Type', 'Expected Value', 'CVaR', 'Trading Cost';
+put 'Time', 'Type', 'Expected Value', 'CVaR', 'Trading Cost', 'Maximum Value', 'Minimum Value';
 loop(i,
      put i.tl;
 );
@@ -386,7 +393,7 @@ put /;
 loop(tmonth,
 
             loop(risk,
-                 put tmonth.tl, risk.tl, Mr_total(tmonth,risk), CVaR_total(tmonth,risk), trading_costs_total(tmonth,risk);
+                 put tmonth.tl, risk.tl, Mr_total(tmonth,risk), CVaR_total(tmonth,risk), trading_costs_total(tmonth,risk), maximum_value(tmonth,risk), minimum_value(tmonth,risk);
                              loop(i,
                                  put bonds_total(tmonth,i,risk);
                                  );
