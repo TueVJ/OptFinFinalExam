@@ -3,7 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-df = pd.read_csv('../data/portfolio_revision_all.csv').set_index('Time')
+budget = 1000000
+
+df = pd.read_csv('../data/portfolio_revision_all.csv')
+df['Time'] = pd.to_datetime(df['Time'])
+df = df.set_index('Time')
 
 statscolumns = ['Expected Value', 'CVaR', 'Trading Cost']
 
@@ -13,22 +17,35 @@ sdf = df[[c for c in df.columns if c in statscolumns] + ['Type']]
 sdf['Current Value'] = pdf.sum(axis=1)
 sdf['Expected Profit'] = sdf['Expected Value'] - sdf['Current Value']
 sdf['Actual Profit'] = sdf['Current Value'].diff()
-sdf['Cumulative Trading Cost'] = sdf['Trading Cost'].cumsum()
-raise SystemExit
-# Plot portfolios
 
-plt.ion()
-plt.figure(figsize=(6, 3), dpi=100)
+sdf = sdf.reset_index().set_index(['Type', 'Time'])
+sdf['Cumulative Trading Cost'] = df.reset_index().groupby(by=['Type', 'Time'])['Trading Cost'].sum().groupby(level=[0]).cumsum()
+sdf = sdf.reset_index().set_index('Time')
+
+# Set up 1/N results, add to sdf
+rawetfs = pd.read_csv('../data/etfs_max_mean_prices.csv', parse_dates=0)
+rawetfs = rawetfs.rename(columns={u'Unnamed: 0': 'Time'})
+rawetfs['Time'] = pd.to_datetime(rawetfs['Time'])
+rawetfs = rawetfs.set_index('Time')
+# Select date range of problem
+rawetfs = rawetfs.ix[df.index]
+# Normalize prices to initial prices
+rawetfs = rawetfs / rawetfs.ix[0]
+# Compute value of 1 over n portfolio
+overnportfolio = (rawetfs / len(rawetfs.columns) * budget).sum(1)
+
+plt.figure(1, figsize=(6, 3), dpi=100)
 ax = plt.axes()
-pdf.loc[:, pdf.sum() > 0].plot(kind='bar', stacked=True, ax=ax)
-plt.ylim((0, 1200000))
-plt.legend(ncol=5)
-plt.xticks(rotation=0)
-plt.ylabel("Asset Value [DKK]")
-plt.xlabel('')
-plt.tight_layout()
-plt.savefig('../pic/portfoliorevision_portfolio.pdf')
+namedict = {
+    'risk_averse': 'Risk Averse, bootstrap',
+    'risk_neutral': 'Risk Neutral, bootstrap'
+}
 
-# Export latex table
-sdf['Expected Profit'] = sdf['Expected Value'] - pdf.sum(axis=1)
-sdf.to_latex('../tex/portfoliorevision_table.tex', columns=['Expected Profit', 'CVaR', 'Trading Cost'])
+for l, d in sdf.groupby('Type'):
+    (d['Current Value'] - d['Cumulative Trading Cost']).plot(label=namedict[l], ax=ax)
+
+overnportfolio.plot(label='1 over N', ax=ax)
+
+plt.xlabel('')
+plt.ylabel("Portfolio Value [DKK]")
+plt.legend(ncol=1, loc='upper left')
