@@ -113,7 +113,7 @@ gp2['Forecasted Value'] = gp2['Expected Value'].shift(1)
 gp2['Max Forecasted Value'] = gp2['Maximum Value'].shift(1)
 gp2['Min Forecasted Value'] = gp2['Minimum Value'].shift(1)
 
-plt.figure(2)
+plt.figure(2, figsize=(6, 5), dpi=100)
 
 ax1 = plt.subplot(211)
 (gp['Forecasted Value']/budget).plot(c=sns.xkcd_rgb['salmon'], lw=3, ax=ax1)
@@ -180,3 +180,59 @@ plt.ylabel("Portfolio Net Value [DKK]")
 plt.legend(ncol=1, loc='upper left')
 
 plt.savefig('../pic/trading_portfolio_value.pdf')
+
+
+# Build table for results
+
+bra = sdf.groupby('Type').get_group('risk_averse')
+brn = sdf.groupby('Type').get_group('risk_neutral')
+mra = msdf.groupby('Type').get_group('risk_averse')
+mrn = msdf.groupby('Type').get_group('risk_neutral')
+
+lastperiodindex = -6
+print 'Last trading day: {}'.format(bra.index[lastperiodindex])
+
+# Total number of years in trading period
+numyears = (bra.index[lastperiodindex]-bra.index[0]).days/365.
+
+table = pd.DataFrame(
+    index=[
+        'Risk Averse, bootstrap',
+        'Risk Neutral, bootstrap',
+        'Risk Averse, moment matching',
+        'Risk Neutral, moment matching',
+        '1 over N'
+    ],
+    data={
+        'Final Nominal Value': np.round([
+            bra['Current Value'].ix[lastperiodindex],
+            brn['Current Value'].ix[lastperiodindex],
+            mra['Current Value'].ix[lastperiodindex],
+            mrn['Current Value'].ix[lastperiodindex],
+            overnportfoliovalue.ix[lastperiodindex]*budget/100
+        ], 0),
+        'Trading Costs': np.round([
+            bra['Cumulative Trading Cost'].ix[lastperiodindex],
+            brn['Cumulative Trading Cost'].ix[lastperiodindex],
+            mra['Cumulative Trading Cost'].ix[lastperiodindex],
+            mrn['Cumulative Trading Cost'].ix[lastperiodindex],
+            0
+        ], 0),
+        'Final Net Profit': np.round([
+            bra['Net Value'].ix[lastperiodindex] - budget,
+            brn['Net Value'].ix[lastperiodindex] - budget,
+            mra['Net Value'].ix[lastperiodindex] - budget,
+            mrn['Net Value'].ix[lastperiodindex] - budget,
+            overnportfoliovalue.ix[lastperiodindex]*budget/100 - budget
+        ], 0),
+        'Annualized Return': map(lambda x: '{} %'.format(x*100), np.round([
+            (bra['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (brn['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (mra['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (mrn['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (overnportfoliovalue.ix[lastperiodindex]/100)**(1/numyears)-1
+        ], 3))
+    }
+)
+
+table.to_latex('../tex/trading_table.tex')

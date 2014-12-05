@@ -10,7 +10,28 @@ This strategy yields an annualized return of 5.7\% for the max-mean assets, and 
 
 \begin{figure}[tp]
 \centering
-\includegraphics{../pic/returns_1overN_only.pdf}
-\caption{DELETE ME IN FINAL:\ Returns for the 1/N strategy for the ensembles indicated.}
-\label{fig:bondsyield}
+\includegraphics{../pic/trading_portfolio.pdf}
+\caption{Portfolios found by the risk-averse (top) and risk-neutral (bottom) trading strategies.}
+\label{fig:tradingportfolios}
 \end{figure}
+
+
+\begin{figure}[tp]
+\centering
+\includegraphics{../pic/trading_forecasted_value.pdf}
+\caption{Nominal values of portfolios over time (Black line) versus forecasted mean value (light red). The shaded region indicates the maximum and minimum forecasted values of the ensembles.}
+\label{fig:tradingforecastedvalues}
+\end{figure}
+
+\begin{figure}[tp]
+\centering
+\includegraphics{../pic/trading_portfolio_value.pdf}
+\caption{Net values of portfolios over time. (Net value = nominal value minus cumulative trading costs)}
+\label{fig:tradingportfoliovalues}
+\end{figure}
+
+\begin{table}
+\caption{Comparison of trading strategies}\label{tbl:portfoliotabel}
+\centering
+\input{trading_table}
+\end{table}
