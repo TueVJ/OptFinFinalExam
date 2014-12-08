@@ -7,10 +7,10 @@ The CVaR model is defined as
 \begin{align}
 \sum_{i} x_{i} &= \up{Budget} \\
 \up{MeanReturn} &\ge \mu_{\up{Target}} \up{Budget} \\
-\up{VaRDev}_{s} &\ge \up{Losses}_{s} - \up{VaR} \; \; \forall s \\
+\up{VaRDev}_{s} &\ge \up{Losses}_{s} - \up{VaR} \; \; \forall s \label{eq:VarDev}\\
 \up{Losses}_{s} &= \sum_{i} x_{i} - \sum_{i} \up{P}_{i,s} x_{i} \; \; \forall s \\
 \up{CVaR} &= \up{VaR} + \frac{1} {1 - \alpha} \sum_{s} \up{pr}_{s} \up{VaRDev}_{s} \\
-\up{MeanReturn} &= \sum_{i} \up{EP}_{i} x_{i}
+\up{MeanReturn} &= \sum_{i} \up{EP}_{i} x_{i} \label{eq:MeanReturn}
 \end{align}
 where $ \mu_{\up{Target}}$ is 0, $\up{P}_{i,s}$ is the value of each ETF $i$ by scenario $s$, $\up{pr}_{s}$ is the probability of each scenario $s$, $\up{EP}_{i}$ is the expected value for each ETF $i$, and $\alpha$ is assumed to be 0.5.
 For this work, $\up{pr}_{s}$ is assumed to be linearly distributed over the scenarios, i.e. $\up{pr}_{s} = \frac{1}{|\Omega|} \forall s$.

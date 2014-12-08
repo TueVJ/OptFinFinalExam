@@ -3,9 +3,10 @@ The portfolio revision model is an extension of the CVaR model to revise and eva
 In this work, is assumed that four weeks are gone and the previous portfolio on section~\ref{sec:CVaR} could no longer be credible and acceptable.
 So, a revision of the portfolio on the (2008-03-28) to maximize the return under two different strategies (risk averse and risk neutral) are considered.
 The portfolio revision entails some costs for the transactions deviations on the portfolio.
-In this way, is assumed a transaction cost of 0.1\% of the traded amount in kr., assuming at least 50 kr per trade.
+Here, we assume a transaction cost of 0.1\% of the traded amount in kr., and a minimum cost of at least 50 kr per trade.
+These costs are taken to be paid from our own pocket outside of the value of the assets.
 
-The portfolio revision model is defines as
+The portfolio revision model is defined as
 \begin{align}
 \up{TotalCost} &= \lambda \up{CVaR} - {\left( 1 - \lambda \right)} \up{MeanReturn} + \up{TradeCost} \\
 x^\up{old}_{i} + x^\up{difference}_{i} &= x_{i} \; \; \forall i \\
@@ -18,19 +19,11 @@ x^\up{difference}_{i} &\le B_{i} \up{M} \; \; \forall i \\
 \up{TC}_{i} &\ge - 0.001 x^\up{difference}_{i} \; \; \forall i \\
 \end{align}
 where $\lambda$ is the level of risk of the strategy (1 - Risk Averse ; 0 - Risk Neutral), TradeCost is the total cost of the trades of all changes in portfolio, and $x^\up{old}_{i}$ is the previous result of portfolio updated with the current historical monthly return.
-In this way, the first $x^\up{old}_{i}$ is based on the results of section~\ref{sec:CVaR} considering the run related to risk averse.
+In this way, the first $x^\up{old}_{i}$ is based on the results of section~\ref{sec:CVaR} using the risk averse result.
 The difference between the $x^\up{old}_{i}$ and the new $x_{i}$ is given by $x^\up{difference}_{i}$.
-$B_{i}$ is a binary variable to characterize if there are or not a transacation by each ETF $i$, and M is a high constant value to allow the selection of trade or not trade.
-$\up{TC}_{i}$ is the tradde cost by each ETF $i$, and penalty corresponds to the trade cost of 50 kr.
-In addition to the previous constraints, the CVaR model presented in section~\ref{sec:CVaR} is considered as constraints in the portfolio revision model.
-
-The aim of the present section is to minimize the TotalCost of the full portfolio revision model for each type of strategy (risk averse and risk neutral).
-The results concerning the expected value, CVaR and assets portfolio are presented in Table\ref{tbl:portfoliotabel} considering a comparison between the different strategies and the initial solution. 
-
-Results...
-
-
-
+$B_{i}$ is a binary variable which characterizes if there is or is not a transacation in each ETF $i$, and M is a high constant value to allow the selection of trade or not trade, chosen here to be equal to the value of the portfolio.
+$\up{TC}_{i}$ is the trade cost incurred due to trading in each ETF $i$, and penalty corresponds to the trade cost of 50 kr.
+In addition to the previous constraints, constraints~\eqref{eq:MeanReturn}~through~\eqref{eq:VarDev} in the CVaR model presented in section~\ref{sec:CVaR} is considered as constraints in the portfolio revision model.
 
 \begin{figure}[tp]
 \centering
@@ -44,3 +37,9 @@ Results...
 \centering
 \input{portfoliorevision_table}
 \end{table}
+
+The aim of the present section is to minimize the TotalCost of the full portfolio revision model for each type of strategy (risk averse and risk neutral).
+The portfolios are shown on Figure~\ref{fig:prevpf}, while the resulting expected value, CVaR and trading are presented in Table~\ref{tbl:portfoliotabel} considering a comparison between the different strategies and the initial solution. 
+
+The risk-averse strategy makes a small adjustment to the portfolio to decrease the CVaR, while the risk-neutral trader throws away pretty much the entire portfolio to nearly only include a single, high risk asset with high historic return.
+Trading a very large value in this way yields a very high trading cost, which is made up for by the large increase in expected profit.
