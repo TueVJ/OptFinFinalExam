@@ -15,7 +15,7 @@ x^\up{difference}_{i} &\le B_{i} \up{M} \; \; \forall i \\
 \up{TradeCost} &= \sum_{i} \up{TC}_{i} \\
 \up{TC}_{i} &\ge B_{i} \up{penalty} \; \; \forall i \\
 \up{TC}_{i} &\ge 0.001 x^\up{difference}_{i} \; \; \forall i \\
-\up{TC}_{i} &\ge - 0.001 x^\up{difference}_{i} \; \; \forall i \\
+\up{TC}_{i} &\ge - 0.001 x^\up{difference}_{i} \; \; \forall i 
 \end{align}
 where $\lambda$ is the level of risk of the strategy (1 - Risk Averse ; 0 - Risk Neutral), TradeCost is the total cost of the trades of all changes in portfolio, and $x^\up{old}_{i}$ is the previous result of portfolio updated with the current historical monthly return.
 In this way, the first $x^\up{old}_{i}$ is based on the results of section~\ref{sec:CVaR} considering the run related to risk averse.
@@ -24,23 +24,32 @@ $B_{i}$ is a binary variable to characterize if there are or not a transacation 
 $\up{TC}_{i}$ is the tradde cost by each ETF $i$, and penalty corresponds to the trade cost of 50 kr.
 In addition to the previous constraints, the CVaR model presented in section~\ref{sec:CVaR} is considered as constraints in the portfolio revision model.
 
+\begin{table}[tp]
+\caption{Stats for portfolios found by portfolio revision model.}\label{tbl:portfoliotabel}
+\centering
+\input{portfoliorevision_table}
+\end{table}
+
 The aim of the present section is to minimize the TotalCost of the full portfolio revision model for each type of strategy (risk averse and risk neutral).
 The results concerning the expected value, CVaR and assets portfolio are presented in Table\ref{tbl:portfoliotabel} considering a comparison between the different strategies and the initial solution. 
 
-Results...
+The initial solution is obtained running the full portfolio revision mode where the value of $x^\up{old}_{i}$  is based on the previous results of CVaR model updating with the current historical return (2008-03-26). 
+$x^\up{old}_{i}$  is given by
 
+\begin{align}
+x^\up{old}_{i} &= x_{i} r_{i,m}
+\end{align}
 
+where $r_{i,m}$ is the histoical monthly return.
 
+Figure~\ref{fig:prevpf} presents the portfolio results for each of the strategies.
+One can see that risk averse strategy try to get the ETF index with lower risk instead of great profit.
+On the other hand, risk neutral strategy try to get the ETF index that can represent the maximum possible return without considering the probability of happen that maximum return scenario.
 
-\begin{figure}[tp]
+\begin{figure}[tpbh]
 \centering
 \includegraphics{../pic/portfoliorevision_portfolio.pdf}
 \caption{Initial portfolio versus those found by the two types of traders.}
 \label{fig:prevpf}
 \end{figure}
 
-\begin{table}
-\caption{Stats for portfolios found by portfolio revision model.}\label{tbl:portfoliotabel}
-\centering
-\input{portfoliorevision_table}
-\end{table}
