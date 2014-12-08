@@ -6,7 +6,7 @@ I.e. $x_i^\up{old} \leftarrow (1 + HMR_{i,m}) * x_i$.
 
 \begin{figure}[tpb]
 \centering
-\includegraphics{../pic/trading_portfolio.pdf}
+\includegraphics[width=1.0\textwidth]{../pic/trading_portfolio.pdf}
 \caption{Portfolios found by the risk-averse (top) and risk-neutral (bottom) trading strategies.}
 \label{fig:tradingportfolios}
 \end{figure}
@@ -21,7 +21,7 @@ In this way and based on the behaviour of the ETFs in Figure~\ref{fig:prices_sel
 
 \begin{figure}[tpb]
 \centering
-\includegraphics{../pic/trading_forecasted_value.pdf}
+\includegraphics[width=1.0\textwidth]{../pic/trading_forecasted_value.pdf}
 \caption{Nominal values of portfolios over time (Black line) versus forecasted mean value (light red). The shaded region indicates the maximum and minimum forecasted values of the ensembles. The risk avers (top) and risk neutral (bottom) strategies for portfolio valueare considered.}
 \label{fig:tradingforecastedvalues}
 \end{figure}
@@ -39,30 +39,20 @@ Looking at the spread the scenarios reveal that only in a few cases around mid-l
 \label{fig:tradingportfoliovalues}
 \end{figure}
 
-
 % TODO: REWRITE
+Figure~\ref{fig:tradingportfoliovalues} present the portfolio net value for different strategies and methods. 
+A comparison between risk averse and risk neutral strategy for bootstrap method and moment matching method is considered.
+These strategies are compared with a simple trading scheme ($1/N$ strategy).
+On the first trading day we invest an equal amount into each asset, and then leave the assets be for the entire trading period.
+Throughout the entire trading period, one can identify that $1/N$ strategy has a "middle-term" bahaviour when compared with the remaining strategies.
+In this way, $1/N$ strategy present a higher portfolio value than risk averse strategy for both bootstrap and moment matching strategies.
+On the other hand, risk neutral strategy for both bootstrap and moment matching achieve higher portfolio value than $1/N$ strategy.
 
-The portfolio value over the time for each of the strategies is presented in Figure~\ref{fig:tradingportfoliovalues}.
-One can see that different strategies has different average behaviours, as well as the worst and best case of the scenarios.
-The risk neutral strategy is the strategy that achieves higher return in the end of the period of investment. 
-However, it does not mean that is the best strategy among all periods.
-On average, the ideal strategy throughout the time is the use of both strategies to maximize the expected return.
-In the early six months is advised the use of risk neutral strategy.
-Than risk averse should be used until the early months of 2013.
-In the remaining months, risk neutral ensures more return to the investor.
-
-Regarding the results of portfolio revision model considering the scenario generation of moment matching, we conclude that the patterns of the results are very similar.
-
-To compare the strategies with a simple trading scheme, the $1/N$ strategy is used; on the first trading day we invest an equal amount into each asset, and then leave the assets be for the entire trading period.
-In order to compare a 1/N strategy with the strategy results of risk averse and risk neutral is presented the Figure~\ref{fig:tradingportfoliovalues}.
-Furthermore, is considered the results of each strategy (risk averse and risk neutral) for each scenario generation method (bootstrap and moment matching).
-
-One can see that the risk averse strategy from the bootstrap method present on average higher portfolio value than the same strategy but based on moment matching method.
-On the other hand, risk neutral strategy from moment matching strategy presents on average higher portfolio values than the strategy based on bootstrap method.
-Regarding to the 1/N strategy, one can identify that is a strategy that returns a stable portfolio value throughout the periods.
-However, is a strategy that presents results between the two extreme strategies (risk averse and risk neutral).
-In the end, is expected a higher return value on risk averse strategy, and the lower return value on risk neutral strategy.
-
+As concerns the behaviour of the risk neutral strategy for both scenario generation methods, it can be seen that the moment matching method quickly recover from the crash in early 2009, while the bootstrap method take years to recover.
+If we were to end the back-test in early 2013, the bootstrap method would not ensure a good portfolio value.
+However, the bootstrap method recovers very quickly after 2013 which results in very close portfolio value to the moment matching method in the end of the trading period.
+Looking at the performance of the risk averse strategy for the two different methods of scenario generation, the bootstrap method ensures better portfolio value than moment matching strategy in most of the trading period. The risk averse strategy is very sensitive to correlations in the market and is not accounted in the moment matching method. 
+One can conclude that the performance of the strategy strongly depends on the chosen scenerio generation method and vice-versa.
 % Until here
 
 \begin{table}[tpb]

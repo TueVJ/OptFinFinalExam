@@ -1,6 +1,6 @@
 \section{CVaR model}\label{sec:CVaR}
 
-The CVaR model was built based on the first set of scenarios with start date 2008-02-27, obtained from scenario generaion chapter. 
+The CVaR model was built based on the first set of scenarios with start date 2008-02-27, obtained from scenario generaion chapter (section~\ref{sec:ScenGen} and \ref{sec:ScenGenMM}). 
 Based on this set the current value and expected value $P_{i,s}$ is determined for each ETF $i$ for each scenario $s$.
 In addition, an initial budget of 1 million kr is considered.  
 The CVaR model is defined as
@@ -17,7 +17,7 @@ For this work, $\up{pr}_{s}$ is assumed to be linearly distributed over the scen
 
 \begin{figure}[tp]
 \centering
-\includegraphics{../pic/frontier.pdf}
+\includegraphics[width=1.0\textwidth]{../pic/frontier.pdf}
 \caption{Optimal frontier for equidistant steps in CVaR. `Expected value' is the mean value of the portfolios found based on the scenarios.}
 \label{fig:frontier}
 \end{figure}
@@ -35,7 +35,7 @@ At low CVaR, a small increase in CVaR leads to a large increase in expected retu
 
 \begin{figure}[tp]
 \centering
-\includegraphics{../pic/Stake_vs_CVaR.pdf}
+\includegraphics[width=1.0\textwidth]{../pic/Stake_vs_CVaR.pdf}
 \caption{Portfolios at varying levels of the CVaR bound.}
 \label{fig:scenarioportfolios}
 \end{figure}
@@ -48,7 +48,7 @@ In the period before the trading date (2008-02-27), the scenario generation cont
 
 \begin{figure}[tp]
 \centering
-\includegraphics{../pic/Scenario_Return.pdf}
+\includegraphics[width=1.0\textwidth]{../pic/Scenario_Return.pdf}
 \caption{Scenario return for portfolios at varying levels of the CVaR bound.
 The distributions for each bound are mirrored on the vertical axis, with the mean (dashed) and standard deviation (dotted) shown.}
 \label{fig:scenarioreturn}

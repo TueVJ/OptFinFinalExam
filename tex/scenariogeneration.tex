@@ -1,4 +1,4 @@
-\section{Scenario generation}
+\section{Scenario generation}\label{sec:ScenGen}
 
 The period of study considered in this work is  between 02/02/2005 and 12/11/2014, with the aim to produce a back-test starting on 27/02/2008.
 In order to generate scenarios to be used for CVaR model, several assumptions are needed. The historical return for each ETF over the period $t$ is given by
@@ -10,7 +10,7 @@ The scenarios are randomly generated picking four dates in a specified interval 
 WRS_{i,st,s,m} = r_{i,t}  \up{ for } t \equiv RANDOM(T_{m}), \;\; \forall i \in E, st \in ST, s \in \Omega, m \in M
 \end{gather}
 where $WRS_{i,st,s,m}$ is the weekly return scenarios for each month $m$.
-The first specified interval$T_1$ where is picked the historical returns is between 28/01/2005 and 27/02/2008.
+The first specified interval $T_1$ where is picked the historical returns is between 28/01/2005 and 27/02/2008.
 For each $m$ the specified interval shift itself one month until the end of the period of study (12/11/2014).
 The monthly return for each of scenario $MRS_{i,s,m}$ is based on accumulating the four weeks return scenario and is determined as
 \begin{gather}
