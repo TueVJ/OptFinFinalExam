@@ -1,3 +1,30 @@
 \section{Gams code\label{sec:appendixcode}}
 
-All code from this project is available at \url{www.github.com/TueVJ/OptFinFinalExam}~.
+All code from this project is available at \url{www.github.com/TueVJ/OptFinFinalExam}~. A listing of the files follows:
+
+\begin{lstlisting}[language=sh]
+./clustering/clustering.py:
+	- Downloads price data for assets in ./input_data/instruments2.csv over the relevant period.
+	- Clusters assets based on correlation of weekly returns
+
+./scenario\_generation/boostrap.gms:
+	- Generates monthly scenarios via the bootstrap model
+
+./scenario\_generation/moment\_matching.gms:
+	- Generates monthly scenarios via the moment matching method
+
+./running\_model/cvar.gms:
+	- Main model code
+	- Runs CVaR model for initial portfolio selection
+	- Runs portfoliorevision to show effect of scenarios
+	- Runs back-test
+
+./plot\_results/plot\_CVaR\_frontier.py:
+	- Plots results from CVaR model
+
+./plot\_results/plot\_portfolio\_revision\_results.py:
+	- Plots results for the portfolio revision model
+
+./plot\_results/plot\_trading\_results.py:
+	- Plots results for the trading model
+\end{lstlisting}
