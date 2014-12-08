@@ -226,13 +226,18 @@ table = pd.DataFrame(
             overnportfoliovalue.ix[lastperiodindex]*budget/100 - budget
         ], 0),
         'Annualized Return': map(lambda x: '{} %'.format(x*100), np.round([
-            (bra['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
-            (brn['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
-            (mra['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
-            (mrn['Current Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (bra['Net Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (brn['Net Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (mra['Net Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
+            (mrn['Net Value'].ix[lastperiodindex]/budget)**(1/numyears)-1,
             (overnportfoliovalue.ix[lastperiodindex]/100)**(1/numyears)-1
         ], 3))
     }
 )
 
-table.to_latex('../tex/trading_table.tex')
+table.to_latex('../tex/trading_table.tex', columns=[
+    'Final Nominal Value',
+    'Trading Costs',
+    'Final Net Profit',
+    'Annualized Return'
+])
