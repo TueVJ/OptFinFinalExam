@@ -21,7 +21,7 @@ This is intuitively a reasonable measure, as (1) going long on an asset is the s
 To do hierarchical clustering, a method of combining clusters must be defined.
 We compare the results of using the various methods built in to the SciPy module for Python: complete, average, weighted and single.
 A dendrogram of the clusters found by these methods is shown on Figure~\ref{fig:dendrogram}.
-Both the complete, average and weighted methods lead to faily balanced trees.
+Both the complete, average and weighted methods lead to fairly balanced trees.
 We choose to use the complete method, as the final clusters found by this method are the most uniform in size.
 We choose to use only 15 clusters for the current work, since going to 25 clusters would lead to many single-asset cluster while not breaking up the largest cluster in Figure~\ref{fig:dendrogram} --- an indication that the assets in this cluster are very similar.
 
@@ -47,3 +47,4 @@ In particular, IAU, which tracks the gold price, and IEF, which tracks US treasu
 In order to prune the tree of assets, we pick from each cluster a single representative asset in two ways.
 The max-return criterion picks out the asset which has the highest return across the period, while the min-stdev criterion pick the asset with the smallest standard deviation, i.e.\ the most stable asset.
 The assets selected by these two criteria and their associated price histories for the entire period are shown in Figure~\ref{fig:prices_selected}.
+The price histories for the assets selected by the max-return criterion looks more diverse than for the min-stdev criterion, and we will restrict the following discussion to the assets found by the max-return criterion.
